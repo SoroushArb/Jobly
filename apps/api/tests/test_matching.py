@@ -204,8 +204,10 @@ class TestSkillExtraction:
         
         skills = ScoringUtils.extract_skills_from_job(job)
         
-        # Should only have one "python" in the set
-        assert skills.count("python") == 1 if "python" in skills else 0
+        # Should only have one "python" since it's a set
+        assert "python" in skills
+        # Count occurrences by converting to list and counting
+        assert list(skills).count("python") == 1
 
 
 class TestSeniorityInference:
