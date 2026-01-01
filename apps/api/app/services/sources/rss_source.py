@@ -85,12 +85,12 @@ class RSSSource(Source):
         if hasattr(entry, "published_parsed") and entry.published_parsed:
             try:
                 posted_date = datetime(*entry.published_parsed[:6]).isoformat()
-            except:
+            except (TypeError, ValueError, IndexError):
                 pass
         elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
             try:
                 posted_date = datetime(*entry.updated_parsed[:6]).isoformat()
-            except:
+            except (TypeError, ValueError, IndexError):
                 pass
         
         # Try to extract location from tags or category
@@ -151,7 +151,7 @@ class RSSSource(Source):
         if raw_job.posted_date:
             try:
                 posted_date = datetime.fromisoformat(raw_job.posted_date.replace("Z", "+00:00"))
-            except:
+            except (ValueError, AttributeError):
                 pass
         
         # Clean description (remove HTML tags if present)

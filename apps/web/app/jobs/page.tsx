@@ -80,9 +80,10 @@ export default function JobsPage() {
     }
   };
 
-  // Load jobs on mount and when filters change
+  // Load jobs on mount and when pagination changes
   useEffect(() => {
     fetchJobs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.page, filters.per_page]);
 
   // Handle filter change
@@ -195,7 +196,6 @@ export default function JobsPage() {
             <button
               onClick={() => {
                 setFilters({ remote_type: '', country: '', city: '', keyword: '', page: 1, per_page: 50 });
-                setTimeout(() => fetchJobs(), 100);
               }}
               className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
