@@ -1,0 +1,88 @@
+JOHN SMITH
+Senior Full-Stack Developer
+
+Contact:
+Email: john.smith@example.com
+LinkedIn: linkedin.com/in/johnsmith
+GitHub: github.com/johnsmith
+Website: https://johnsmith.dev
+
+PROFESSIONAL SUMMARY
+
+Experienced Full-Stack Developer with 5+ years of experience building scalable web 
+applications using modern technologies. Passionate about clean code, test-driven 
+development, and continuous learning. Expertise in Python, JavaScript, and cloud 
+technologies.
+
+SKILLS
+
+Programming Languages: Python, JavaScript, TypeScript, Java, Go
+Frameworks: React, Next.js, FastAPI, Django, Express, Spring Boot
+Tools & Technologies: Docker, Kubernetes, AWS, MongoDB, PostgreSQL, Redis, Git
+Methodologies: Agile, TDD, CI/CD
+
+PROFESSIONAL EXPERIENCE
+
+Tech Innovations Inc.
+Senior Full-Stack Developer | Jan 2021 - Present
+
+- Led development of microservices architecture serving 1M+ daily active users
+- Reduced API response time by 40% through optimization and caching strategies
+- Mentored team of 5 junior developers on best practices and code reviews
+- Implemented automated testing suite increasing code coverage to 95%
+- Migrated legacy monolith to cloud-native microservices on AWS
+
+Technologies: Python, FastAPI, React, TypeScript, MongoDB, Docker, AWS, Kubernetes
+
+StartupXYZ
+Full-Stack Developer | Jun 2019 - Dec 2020
+
+- Built customer-facing web application from ground up using React and Node.js
+- Implemented CI/CD pipeline reducing deployment time by 60%
+- Integrated third-party APIs for payment processing and analytics
+- Developed RESTful APIs handling 100K+ daily requests
+- Collaborated with product team to define technical requirements
+
+Technologies: JavaScript, React, Node.js, Express, PostgreSQL, Docker, Jenkins
+
+Software Solutions Ltd.
+Junior Developer | Jul 2018 - May 2019
+
+- Developed RESTful APIs for internal tools using Django
+- Maintained and improved legacy codebase with 95% test coverage
+- Participated in code reviews and sprint planning
+- Fixed critical bugs in production systems
+
+Technologies: Python, Django, PostgreSQL, Git
+
+PROJECTS
+
+Open Source Task Manager
+- A collaborative task management tool built with Next.js and FastAPI
+- Features real-time updates, team collaboration, and analytics
+- Technologies: Next.js, FastAPI, MongoDB, Redis, WebSockets
+- GitHub: https://github.com/johnsmith/task-manager
+
+ML Price Predictor
+- Machine learning model for predicting real estate prices
+- Achieved 92% accuracy using ensemble methods
+- Technologies: Python, scikit-learn, FastAPI, Docker
+
+EDUCATION
+
+Bachelor of Science in Computer Science
+University of Technology | 2014 - 2018
+- Graduated with Honors
+- GPA: 3.8/4.0
+- Dean's List: 6 semesters
+
+CERTIFICATIONS
+
+- AWS Certified Solutions Architect - Associate (2022)
+- Professional Scrum Master I (2021)
+
+LANGUAGES
+
+- English (Native)
+- German (Intermediate)
+- Spanish (Basic)
