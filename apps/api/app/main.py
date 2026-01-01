@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import profile_router, jobs_router
+from app.routers import profile_router, jobs_router, matches_router
 from app.models import Database
 import os
 from dotenv import load_dotenv
@@ -9,8 +9,8 @@ load_dotenv()
 
 app = FastAPI(
     title="Jobly API",
-    description="AI Job Hunter Agent - User Profile Management & Job Ingestion",
-    version="2.0.0"
+    description="AI Job Hunter Agent - Profile Management, Job Ingestion & Matching",
+    version="3.0.0"
 )
 
 # Configure CORS
@@ -27,6 +27,7 @@ app.add_middleware(
 # Include routers
 app.include_router(profile_router)
 app.include_router(jobs_router)
+app.include_router(matches_router)
 
 
 @app.on_event("startup")
@@ -48,11 +49,12 @@ async def root():
     """Root endpoint"""
     return {
         "message": "Jobly API - AI Job Hunter Agent",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "endpoints": {
             "docs": "/docs",
             "profile": "/profile",
-            "jobs": "/jobs"
+            "jobs": "/jobs",
+            "matches": "/matches"
         }
     }
 

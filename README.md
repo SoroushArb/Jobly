@@ -1,8 +1,8 @@
 # Jobly
 
-AI Job Hunter Agent - **Now with Phase 2: Job Ingestion Pipeline**
+AI Job Hunter Agent - **Now with Phase 3: AI-Powered Job Matching & Ranking!**
 
-A comprehensive job hunting platform that helps you manage your professional profile, set preferences, and browse curated job postings from legal sources.
+A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, and get AI-powered job recommendations with explainable match scores.
 
 ## 🚀 Features
 
@@ -13,13 +13,28 @@ A comprehensive job hunting platform that helps you manage your professional pro
 - **Evidence Tracking**: See where each piece of information came from in your CV
 - **MongoDB Storage**: Persistent storage with MongoDB Atlas
 
-### Phase 2: Job Ingestion (NEW!)
+### Phase 2: Job Ingestion
 - **Job Ingestion**: Automatically fetch jobs from legal RSS feeds and company career pages
 - **Smart Deduplication**: SHA256-based deduplication prevents duplicate job postings
 - **Advanced Filtering**: Filter by remote type, location, and keywords
 - **Source Compliance**: Only configured sources with compliance notes are used
 - **Rate Limiting**: Polite fetching with configurable rate limits
 - **Job Discovery**: Browse jobs in a beautiful table interface with detail modals
+
+### Phase 3: AI-Powered Job Matching (NEW!)
+- **Hybrid Scoring**: Multi-dimensional match scoring combining:
+  - Semantic similarity (embeddings-based)
+  - Skill overlap analysis
+  - Seniority fit matching
+  - Location preference alignment
+  - Job recency weighting
+- **Explainable AI**: Every match includes:
+  - Top reasons why it's a good match
+  - Identified gaps and missing skills
+  - Actionable recommendations to improve candidacy
+- **Smart Embeddings**: OpenAI-powered semantic understanding with MongoDB caching
+- **Swappable Providers**: Embedding provider abstraction allows easy switching between AI services
+- **Ranked Matches**: Jobs sorted by match score with detailed breakdowns
 
 ## 📁 Project Structure
 
@@ -55,6 +70,8 @@ Jobly/
 - **FastAPI**: Modern Python web framework
 - **Pydantic v2**: Data validation and schema management
 - **MongoDB Atlas**: Cloud database (with motor/pymongo)
+- **OpenAI API**: Embeddings for semantic matching
+- **scikit-learn**: Cosine similarity calculations
 - **PyMuPDF**: PDF text extraction
 - **python-docx**: DOCX text extraction
 - **httpx**: Async HTTP client for job fetching
@@ -63,7 +80,7 @@ Jobly/
 - **PyYAML**: Configuration file parsing
 
 ### Frontend
-- **Next.js 15**: React framework with TypeScript
+- **Next.js 16**: React framework with TypeScript
 - **Tailwind CSS**: Utility-first CSS framework
 - **React Hooks**: State management
 
@@ -72,6 +89,7 @@ Jobly/
 - Python 3.10+
 - Node.js 18+
 - MongoDB Atlas account (or local MongoDB)
+- OpenAI API key (for Phase 3 matching)
 
 ## 🚀 Getting Started
 
@@ -96,7 +114,8 @@ pip install -r requirements.txt
 4. Configure environment variables:
 ```bash
 cp .env.example .env
-# Edit .env with your MongoDB connection string
+# Edit .env with your MongoDB connection string and OpenAI API key
+# Required for Phase 3: OPENAI_API_KEY=your_key_here
 ```
 
 5. Run the backend server:
@@ -149,6 +168,21 @@ The web app will be available at http://localhost:3000
 4. **View Details**: Click "View" on any job to see full details in a modal
 5. **Apply**: Click "Apply →" to visit the original job posting
 
+### Job Matching (Phase 3)
+1. **Ensure Prerequisites**: Make sure you have:
+   - A saved profile with skills and preferences
+   - Jobs ingested in the database
+   - OpenAI API key configured in `.env`
+2. **Compute Matches**: Visit http://localhost:3000/matches and click "Recompute Matches"
+3. **Browse Matches**: View ranked job matches sorted by score
+4. **Filter Matches**: Apply filters for minimum score, remote type, location, etc.
+5. **View Details**: Click "View Details" to see:
+   - Match score breakdown
+   - Top reasons for the match
+   - Potential gaps
+   - Actionable recommendations
+6. **Apply**: Click "Apply for This Job" to visit the original posting
+
 ### Job Ingestion (Backend)
 Configure sources in `apps/api/job_sources_config.yaml`, then:
 ```bash
@@ -157,6 +191,18 @@ curl -X POST http://localhost:8000/jobs/ingest
 
 # Via UI
 # Click "Trigger Job Ingestion" button on /jobs page
+```
+
+### Match Computation (Backend)
+```bash
+# Recompute all matches
+curl -X POST http://localhost:8000/matches/recompute
+
+# Get matches with filters
+curl "http://localhost:8000/matches?min_score=0.5&remote=true"
+
+# Get match for specific job
+curl http://localhost:8000/matches/{job_id}
 ```
 
 ## 🧪 Testing
@@ -192,12 +238,18 @@ Once the backend is running, visit:
 - `GET /jobs/{id}`: Get single job posting
 - `GET /jobs/sources/info`: Get configured sources information
 
+**Match Management (Phase 3):**
+- `POST /matches/recompute`: Recompute all matches for current profile
+- `GET /matches`: List matches with filters (min_score, remote, location, skill_tag)
+- `GET /matches/{job_id}`: Get match details for specific job
+
 See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 
 ## 📝 Documentation
 
 - **Phase 1**: See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for Phase 1 details
 - **Phase 2**: See [PHASE2_IMPLEMENTATION.md](PHASE2_IMPLEMENTATION.md) for comprehensive Phase 2 guide
+- **Phase 3**: See [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md) for Phase 3 matching details
 - **Example Profile**: See [apps/api/example_seed_profile.json](apps/api/example_seed_profile.json)
 
 ## 🔒 Environment Variables
@@ -206,6 +258,10 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - `MONGODB_URI`: MongoDB connection string
 - `MONGODB_DB_NAME`: Database name (default: "jobly")
 - `CORS_ORIGINS`: Comma-separated allowed origins (default: "http://localhost:3000")
+- `OPENAI_API_KEY`: OpenAI API key for embeddings (Phase 3)
+- `OPENAI_EMBEDDING_MODEL`: Embedding model name (default: "text-embedding-3-small")
+- `EMBEDDING_PROVIDER`: Provider type (default: "openai")
+- `MATCH_WEIGHT_*`: Optional scoring weights for match components
 
 ### Frontend (apps/web/.env.local)
 - `NEXT_PUBLIC_API_URL`: Backend API URL (default: "http://localhost:8000")
@@ -223,8 +279,14 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - Deduplication and normalization
 - Job browsing UI with filters
 
+**✅ Phase 3 - COMPLETE**: AI-Powered Job Matching
+- Hybrid scoring (semantic + skill + seniority + location + recency)
+- Explainable AI with reasons, gaps, and recommendations
+- OpenAI embeddings with MongoDB caching
+- Swappable embedding providers
+- Match ranking and filtering UI
+
 **🔜 Future Phases** (Not Yet Implemented):
-- AI-powered job matching
 - Resume tailoring for specific jobs
 - Interview preparation
 - Application tracking
@@ -256,4 +318,15 @@ MIT
 ✅ Legal source compliance documented  
 ✅ Rate limiting implemented  
 ✅ Job detail modal with apply links  
-✅ Editable profile screen in Next.js  
+
+### Phase 3 ✅
+✅ Hybrid scoring with 5 components (semantic, skill, seniority, location, recency)  
+✅ OpenAI embedding provider with swappable interface  
+✅ Embedding caching in MongoDB  
+✅ Match generation and storage in MongoDB  
+✅ Explainable AI (reasons, gaps, recommendations)  
+✅ Deterministic scoring with stable tie-breakers  
+✅ API endpoints for match computation and retrieval  
+✅ Matches UI with ranked table and detail modals  
+✅ All tests passing (50/50 total)  
+✅ Frontend builds successfully  

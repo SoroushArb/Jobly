@@ -38,3 +38,9 @@ def get_jobs_collection():
     """Get the jobs collection"""
     db = Database.get_database()
     return db["jobs"]
+
+
+def get_matches_collection():
+    """Get the matches collection"""
+    db = Database.get_database()
+    return db["matches"]
