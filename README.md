@@ -1,8 +1,8 @@
 # Jobly
 
-AI Job Hunter Agent - **Now with Phase 3: AI-Powered Job Matching & Ranking!**
+AI Job Hunter Agent - **Now with Phase 4: Tailored CV Generation & Application Packets!**
 
-A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, and get AI-powered job recommendations with explainable match scores.
+A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, get AI-powered job recommendations, and generate tailored application materials for each job.
 
 ## 🚀 Features
 
@@ -21,7 +21,7 @@ A comprehensive job hunting platform that helps you manage your professional pro
 - **Rate Limiting**: Polite fetching with configurable rate limits
 - **Job Discovery**: Browse jobs in a beautiful table interface with detail modals
 
-### Phase 3: AI-Powered Job Matching (NEW!)
+### Phase 3: AI-Powered Job Matching
 - **Hybrid Scoring**: Multi-dimensional match scoring combining:
   - Semantic similarity (embeddings-based)
   - Skill overlap analysis
@@ -35,6 +35,25 @@ A comprehensive job hunting platform that helps you manage your professional pro
 - **Smart Embeddings**: OpenAI-powered semantic understanding with MongoDB caching
 - **Swappable Providers**: Embedding provider abstraction allows easy switching between AI services
 - **Ranked Matches**: Jobs sorted by match score with detailed breakdowns
+
+### Phase 4: Tailored CV Generation & Application Packets (NEW!)
+- **Tailored CVs**: Generate job-specific CVs with:
+  - Rewritten summary mentioning target company and role
+  - Prioritized skills matching job requirements
+  - LaTeX format for professional typesetting
+  - PDF compilation when latexmk is available
+  - Deterministic 2-page layout control
+- **Application Packet**: Complete application materials for each job:
+  - CV (.tex and .pdf)
+  - Cover letter (optional)
+  - Recruiter outreach message
+  - Common application question answers
+- **Truthful Output**: No fabricated claims or invented experience
+  - Integrity notes warn about missing requirements
+  - Gap analysis shows what's lacking
+  - Evidence-based bullet suggestions
+- **One-Click Generation**: Generate complete packet from matches page
+- **Download & Apply**: All materials ready to download and use
 
 ## 📁 Project Structure
 
@@ -72,6 +91,7 @@ Jobly/
 - **MongoDB Atlas**: Cloud database (with motor/pymongo)
 - **OpenAI API**: Embeddings for semantic matching
 - **scikit-learn**: Cosine similarity calculations
+- **Jinja2**: Template engine for LaTeX CV generation
 - **PyMuPDF**: PDF text extraction
 - **python-docx**: DOCX text extraction
 - **httpx**: Async HTTP client for job fetching
@@ -182,6 +202,46 @@ The web app will be available at http://localhost:3000
    - Potential gaps
    - Actionable recommendations
 6. **Apply**: Click "Apply for This Job" to visit the original posting
+
+### Tailored CV Generation (Phase 4)
+1. **Generate Packet**: From the Matches page, click "Generate Packet" for any job
+2. **View Packet**: You'll be redirected to the packet detail page showing:
+   - Tailored professional summary
+   - Priority skills for this job
+   - Identified gaps
+   - Suggested bullet improvements
+   - Integrity notes
+3. **Download Files**: Download any of the generated materials:
+   - CV (LaTeX .tex file - always available)
+   - CV (PDF - if LaTeX compilation is available)
+   - Cover Letter (if requested)
+   - Recruiter Message
+   - Common Application Answers
+4. **Use Materials**: Use the downloaded files in your application
+
+#### PDF Compilation (Optional)
+To enable PDF generation, install LaTeX on your server:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install texlive-latex-base texlive-latex-extra latexmk
+```
+
+**macOS:**
+```bash
+brew install --cask mactex
+# Or lighter version:
+brew install --cask basictex
+```
+
+**Docker:**
+Add to your Dockerfile:
+```dockerfile
+RUN apt-get update && apt-get install -y texlive-latex-base texlive-latex-extra latexmk
+```
+
+If LaTeX is not installed, the system will still generate .tex files that you can compile locally or on Overleaf.
 
 ### Job Ingestion (Backend)
 Configure sources in `apps/api/job_sources_config.yaml`, then:
