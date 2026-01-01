@@ -11,6 +11,13 @@ from .profile import (
     ProfileResponse,
     ProfileSaveResponse,
 )
+from .job import (
+    JobPosting,
+    JobPostingInDB,
+    JobPostingResponse,
+    JobListResponse,
+    IngestResponse,
+)
 
 __all__ = [
     "Preferences",
@@ -24,4 +31,9 @@ __all__ = [
     "UploadCVResponse",
     "ProfileResponse",
     "ProfileSaveResponse",
+    "JobPosting",
+    "JobPostingInDB",
+    "JobPostingResponse",
+    "JobListResponse",
+    "IngestResponse",
 ]

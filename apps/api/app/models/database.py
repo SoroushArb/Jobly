@@ -32,3 +32,9 @@ def get_profiles_collection():
     """Get the profiles collection"""
     db = Database.get_database()
     return db["profiles"]
+
+
+def get_jobs_collection():
+    """Get the jobs collection"""
+    db = Database.get_database()
+    return db["jobs"]
