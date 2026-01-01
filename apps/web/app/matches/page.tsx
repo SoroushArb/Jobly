@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { MatchWithJob, RecomputeMatchesResponse } from '@/types/match';
+import { GeneratePacketRequest } from '@/types/packet';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function MatchesPage() {
+  const router = useRouter();
   const [matches, setMatches] = useState<MatchWithJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [computing, setComputing] = useState(false);
+  const [generatingPacket, setGeneratingPacket] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<MatchWithJob | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,6 +73,44 @@ export default function MatchesPage() {
       setError(err instanceof Error ? err.message : 'Failed to recompute matches');
     } finally {
       setComputing(false);
+    }
+  };
+
+  const generatePacket = async (jobId: string, includeCoverLetter: boolean = false) => {
+    try {
+      setGeneratingPacket(true);
+      setError(null);
+
+      const request: GeneratePacketRequest = {
+        job_id: jobId,
+        include_cover_letter: includeCoverLetter,
+      };
+
+      const response = await fetch(`${API_URL}/packets/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to generate packet');
+      }
+
+      const data = await response.json();
+      
+      // Close modal
+      setSelectedMatch(null);
+      
+      // Navigate to packet page
+      router.push(`/packets/${data.packet.id}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate packet');
+      alert(`Error: ${err instanceof Error ? err.message : 'Failed to generate packet'}`);
+    } finally {
+      setGeneratingPacket(false);
     }
   };
 
@@ -306,6 +348,13 @@ export default function MatchesPage() {
                         >
                           View Details
                         </button>
+                        <button
+                          onClick={() => generatePacket(matchWithJob.job._id || '', false)}
+                          disabled={generatingPacket}
+                          className="text-purple-600 hover:text-purple-800 mr-3 disabled:text-gray-400"
+                        >
+                          Generate Packet
+                        </button>
                         <a
                           href={matchWithJob.job.url}
                           target="_blank"
@@ -456,10 +505,11 @@ export default function MatchesPage() {
                     Apply for This Job →
                   </a>
                   <button
-                    onClick={() => alert('Generate Packet feature coming soon!')}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    onClick={() => generatePacket(selectedMatch.job._id || '', false)}
+                    disabled={generatingPacket}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
-                    Generate Packet (Coming Soon)
+                    {generatingPacket ? 'Generating...' : 'Generate Application Packet'}
                   </button>
                 </div>
               </div>

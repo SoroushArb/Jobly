@@ -16,7 +16,7 @@
 \setlist{nosep, leftmargin=*}
 
 % Personal data
-\name{((( name.split()[0] if name.split() else '' )))}{((( ' '.join(name.split()[1:]) if len(name.split()) > 1 else '' )))}
+\name{((( name.split()[0] if name.split() else name )))}{((( ' '.join(name.split()[1:]) if name.split()|length > 1 else '' )))}
 (% if email %)
 \email{((( email )))}
 (% endif %)
