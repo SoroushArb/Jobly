@@ -10,15 +10,15 @@ export default function Home() {
               Jobly
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              AI-Powered Job Hunter Agent - Phase 1
+              AI-Powered Job Hunter Agent - Phase 2
             </p>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Upload your CV, create your profile, and set your job search preferences 
-              to get started with intelligent job hunting.
+              Upload your CV, create your profile, set your job search preferences,
+              and browse curated job postings from legal sources.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-semibold mb-4 text-gray-800">
                 📄 Profile Management
@@ -50,6 +50,22 @@ export default function Home() {
                 Set Preferences
               </Link>
             </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                💼 Browse Jobs
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Explore curated job postings from legal sources. Filter by location,
+                remote type, and keywords to find your perfect match.
+              </p>
+              <Link
+                href="/jobs"
+                className="inline-block bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 font-semibold"
+              >
+                View Jobs
+              </Link>
+            </div>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
@@ -78,6 +94,18 @@ export default function Home() {
               <li className="flex items-start">
                 <span className="text-green-500 mr-2">✓</span>
                 <span>Location, language, and skill preferences</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                <span>Job ingestion from legal RSS and company career pages</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                <span>Advanced filtering by location, remote type, and keywords</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-500 mr-2">✓</span>
+                <span>Automatic deduplication of job postings</span>
               </li>
             </ul>
           </div>

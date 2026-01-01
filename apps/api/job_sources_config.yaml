@@ -1,0 +1,53 @@
+# Job Sources Configuration
+# Only sources explicitly listed here will be used for job ingestion
+# Each source must have proper compliance notes
+
+sources:
+  # RSS-based job feeds
+  - name: "Stack Overflow Jobs RSS"
+    type: "rss"
+    enabled: true
+    url: "https://stackoverflow.com/jobs/feed"
+    compliance_note: "Public RSS feed - Terms of Service compliant"
+    rate_limit_seconds: 60
+  
+  - name: "RemoteOK RSS"
+    type: "rss"
+    enabled: true
+    url: "https://remoteok.com/remote-dev-jobs.rss"
+    compliance_note: "Public RSS feed - Terms of Service compliant"
+    rate_limit_seconds: 60
+  
+  # Company career pages (HTML parsing)
+  # These require specific parsing templates per company
+  - name: "Google Careers"
+    type: "company"
+    enabled: false  # Disabled by default - template not implemented yet
+    url: "https://careers.google.com/jobs/results/"
+    compliance_note: "Public careers page - robots.txt compliant"
+    rate_limit_seconds: 120
+    parser_config:
+      job_list_selector: ".gc-card"
+      title_selector: ".gc-card__title"
+      location_selector: ".gc-card__location"
+      link_selector: "a.gc-card"
+  
+  - name: "GitHub Careers"
+    type: "company"
+    enabled: false  # Disabled by default - template not implemented yet
+    url: "https://github.com/about/careers"
+    compliance_note: "Public careers page - robots.txt compliant"
+    rate_limit_seconds: 120
+    parser_config:
+      job_list_selector: ".job-listing"
+      title_selector: ".job-title"
+      location_selector: ".job-location"
+      link_selector: "a.job-link"
+
+# Global settings
+settings:
+  default_rate_limit_seconds: 60
+  respect_robots_txt: true
+  user_agent: "Jobly/1.0 (Job Aggregator; +https://github.com/SoroushArb/Jobly)"
+  max_retries: 3
+  timeout_seconds: 30
