@@ -34,7 +34,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 cd apps/api
 source venv/bin/activate
 pip install requests  # If not already installed
-python tests/integration_test.py
+python scripts/integration_test.py
 ```
 
 The integration tests will:
