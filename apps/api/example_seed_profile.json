@@ -1,0 +1,120 @@
+{
+  "name": "John Smith",
+  "email": "john.smith@example.com",
+  "links": [
+    "linkedin.com/in/johnsmith",
+    "github.com/johnsmith",
+    "https://johnsmith.dev"
+  ],
+  "summary": "Experienced Full-Stack Developer with 5+ years of experience building scalable web applications using modern technologies. Passionate about clean code, test-driven development, and continuous learning.",
+  "skills": [
+    {
+      "category": "Programming Languages",
+      "skills": ["Python", "JavaScript", "TypeScript", "Java", "Go"]
+    },
+    {
+      "category": "Frameworks",
+      "skills": ["React", "Next.js", "FastAPI", "Django", "Express", "Spring Boot"]
+    },
+    {
+      "category": "Tools & Technologies",
+      "skills": ["Docker", "Kubernetes", "AWS", "MongoDB", "PostgreSQL", "Redis", "Git"]
+    }
+  ],
+  "experience": [
+    {
+      "company": "Tech Innovations Inc.",
+      "title": "Senior Full-Stack Developer",
+      "dates": "Jan 2021 - Present",
+      "bullets": [
+        {
+          "text": "Led development of microservices architecture serving 1M+ daily active users",
+          "evidence_ref": "page 1"
+        },
+        {
+          "text": "Reduced API response time by 40% through optimization and caching strategies",
+          "evidence_ref": "page 1"
+        },
+        {
+          "text": "Mentored team of 5 junior developers on best practices and code reviews",
+          "evidence_ref": "page 1"
+        }
+      ],
+      "tech": ["Python", "FastAPI", "React", "TypeScript", "MongoDB", "Docker", "AWS"]
+    },
+    {
+      "company": "StartupXYZ",
+      "title": "Full-Stack Developer",
+      "dates": "Jun 2019 - Dec 2020",
+      "bullets": [
+        {
+          "text": "Built customer-facing web application from ground up using React and Node.js",
+          "evidence_ref": "page 1"
+        },
+        {
+          "text": "Implemented CI/CD pipeline reducing deployment time by 60%",
+          "evidence_ref": "page 1"
+        },
+        {
+          "text": "Integrated third-party APIs for payment processing and analytics",
+          "evidence_ref": "page 1"
+        }
+      ],
+      "tech": ["JavaScript", "React", "Node.js", "Express", "PostgreSQL", "Docker"]
+    },
+    {
+      "company": "Software Solutions Ltd.",
+      "title": "Junior Developer",
+      "dates": "Jul 2018 - May 2019",
+      "bullets": [
+        {
+          "text": "Developed RESTful APIs for internal tools using Django",
+          "evidence_ref": "page 2"
+        },
+        {
+          "text": "Maintained and improved legacy codebase with 95% test coverage",
+          "evidence_ref": "page 2"
+        }
+      ],
+      "tech": ["Python", "Django", "PostgreSQL", "Git"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Open Source Task Manager",
+      "description": "A collaborative task management tool built with Next.js and FastAPI",
+      "tech": ["Next.js", "FastAPI", "MongoDB", "Redis"],
+      "url": "https://github.com/johnsmith/task-manager"
+    },
+    {
+      "name": "ML Price Predictor",
+      "description": "Machine learning model for predicting real estate prices",
+      "tech": ["Python", "scikit-learn", "FastAPI", "Docker"],
+      "url": null
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Technology",
+      "degree": "Bachelor of Science",
+      "field": "Computer Science",
+      "dates": "2014-2018",
+      "details": [
+        "Graduated with Honors",
+        "GPA: 3.8/4.0"
+      ]
+    }
+  ],
+  "preferences": {
+    "europe": true,
+    "remote": true,
+    "countries": ["Germany", "Netherlands", "United Kingdom", "Sweden"],
+    "cities": ["Berlin", "Amsterdam", "London", "Stockholm"],
+    "skill_tags": ["Python", "FastAPI", "React", "TypeScript", "AWS"],
+    "role_tags": ["Backend Developer", "Full-Stack Developer", "Software Engineer"],
+    "visa_required": false,
+    "languages": ["English", "German"]
+  },
+  "schema_version": "1.0.0",
+  "updated_at": "2026-01-01T18:00:00.000Z"
+}
