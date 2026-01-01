@@ -35,6 +35,12 @@ export default function RootLayout({
                   >
                     Jobs
                   </Link>
+                  <Link
+                    href="/matches"
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  >
+                    Matches
+                  </Link>
                 </div>
               </div>
             </div>
