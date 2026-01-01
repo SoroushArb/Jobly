@@ -1,3 +1,5 @@
+import { JobPostingInDB } from './job';
+
 export interface ScoreBreakdown {
   semantic: number;
   skill_overlap: number;
@@ -22,7 +24,7 @@ export interface Match {
 
 export interface MatchWithJob {
   match: Match;
-  job: any; // Job object from job.ts
+  job: JobPostingInDB;
 }
 
 export interface MatchListResponse {
@@ -35,7 +37,7 @@ export interface MatchListResponse {
 
 export interface MatchResponse {
   match: Match;
-  job?: any;
+  job?: JobPostingInDB;
   message: string;
 }
 
