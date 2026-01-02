@@ -1,8 +1,8 @@
 # Jobly
 
-AI Job Hunter Agent - **Now with Phase 4: Tailored CV Generation & Application Packets!**
+AI Job Hunter Agent - **Now with Phase 5: AI-Powered Interview Preparation!**
 
-A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, get AI-powered job recommendations, and generate tailored application materials for each job.
+A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, get AI-powered job recommendations, generate tailored application materials, and prepare for interviews with AI-generated materials.
 
 ## 🚀 Features
 
@@ -36,7 +36,7 @@ A comprehensive job hunting platform that helps you manage your professional pro
 - **Swappable Providers**: Embedding provider abstraction allows easy switching between AI services
 - **Ranked Matches**: Jobs sorted by match score with detailed breakdowns
 
-### Phase 4: Tailored CV Generation & Application Packets (NEW!)
+### Phase 4: Tailored CV Generation & Application Packets
 - **Tailored CVs**: Generate job-specific CVs with:
   - Rewritten summary mentioning target company and role
   - Prioritized skills matching job requirements
@@ -54,6 +54,28 @@ A comprehensive job hunting platform that helps you manage your professional pro
   - Evidence-based bullet suggestions
 - **One-Click Generation**: Generate complete packet from matches page
 - **Download & Apply**: All materials ready to download and use
+
+### Phase 5: AI-Powered Interview Preparation (NEW!)
+- **Interview Pack**: Comprehensive preparation materials including:
+  - 30/60/90 day plan tailored to the role
+  - STAR format stories grounded in your real experience
+  - Thoughtful questions to ask the interviewer
+  - Study checklist for identified skill gaps
+- **Technical Q&A**: Gap-aware technical interview preparation:
+  - Questions prioritized based on your weak areas
+  - 3 difficulty levels (easy/medium/hard) per topic
+  - High-quality answers with follow-up questions
+  - Searchable and filterable by topic/difficulty
+- **Grounding & Truth**: All content based on real data
+  - STAR stories reference actual experience bullets
+  - Company info limited to job description only
+  - Integrity notes for missing information
+  - No fabricated claims or invented facts
+- **LLM-Powered Generation**: OpenAI GPT-4o-mini with structured output
+  - Swappable provider architecture
+  - Retry logic and validation
+  - Safe fallback on failures
+- **Export to Markdown**: Download complete prep pack for offline study
 
 ## 📁 Project Structure
 
@@ -89,7 +111,7 @@ Jobly/
 - **FastAPI**: Modern Python web framework
 - **Pydantic v2**: Data validation and schema management
 - **MongoDB Atlas**: Cloud database (with motor/pymongo)
-- **OpenAI API**: Embeddings for semantic matching
+- **OpenAI API**: Embeddings for semantic matching + LLM for interview prep
 - **scikit-learn**: Cosine similarity calculations
 - **Jinja2**: Template engine for LaTeX CV generation
 - **PyMuPDF**: PDF text extraction
@@ -109,7 +131,7 @@ Jobly/
 - Python 3.10+
 - Node.js 18+
 - MongoDB Atlas account (or local MongoDB)
-- OpenAI API key (for Phase 3 matching)
+- OpenAI API key (for Phase 3 matching and Phase 5 interview prep)
 
 ## 🚀 Getting Started
 
@@ -135,7 +157,8 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 # Edit .env with your MongoDB connection string and OpenAI API key
-# Required for Phase 3: OPENAI_API_KEY=your_key_here
+# Required for Phase 3: OPENAI_API_KEY=your_key_here (embeddings)
+# Required for Phase 5: Same OPENAI_API_KEY (interview generation)
 ```
 
 5. Run the backend server:
@@ -218,6 +241,27 @@ The web app will be available at http://localhost:3000
    - Recruiter Message
    - Common Application Answers
 4. **Use Materials**: Use the downloaded files in your application
+
+### Interview Preparation (Phase 5)
+1. **Generate Interview Materials**: From the Packet page, click "Prepare Interview"
+2. **AI Generation**: System creates comprehensive interview prep including:
+   - 30/60/90 day plan for the role
+   - STAR stories grounded in your real experience
+   - Questions to ask the interviewer
+   - Study checklist for skill gaps
+   - Technical Q&A prioritized by your weak areas
+3. **Review Materials**: Browse the interview prep page with:
+   - Organized sections for each component
+   - Color-coded 30/60/90 plan
+   - Expandable STAR stories with grounding references
+   - Categorized interview questions
+   - Interactive study checklist
+4. **Search & Filter**: In the Technical Q&A section:
+   - Search questions, answers, or concepts
+   - Filter by difficulty (easy/medium/hard)
+   - Browse by topic
+5. **Export**: Download complete prep pack as Markdown for offline study
+6. **Prepare**: Practice STAR stories, review technical answers, study gaps
 
 #### PDF Compilation (Optional)
 To enable PDF generation, install LaTeX on your server:
@@ -303,6 +347,16 @@ Once the backend is running, visit:
 - `GET /matches`: List matches with filters (min_score, remote, location, skill_tag)
 - `GET /matches/{job_id}`: Get match details for specific job
 
+**Packet Management (Phase 4):**
+- `POST /packets/generate`: Generate tailored CV and application packet
+- `GET /packets/{packet_id}`: Get packet metadata
+- `GET /packets`: List all packets
+- `GET /packets/{packet_id}/download/{file_type}`: Download specific file
+
+**Interview Prep (Phase 5):**
+- `POST /interview/generate?packet_id=...`: Generate interview preparation materials
+- `GET /interview/{packet_id}`: Get interview pack and technical Q&A
+
 See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 
 ## 📝 Documentation
@@ -310,6 +364,8 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - **Phase 1**: See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for Phase 1 details
 - **Phase 2**: See [PHASE2_IMPLEMENTATION.md](PHASE2_IMPLEMENTATION.md) for comprehensive Phase 2 guide
 - **Phase 3**: See [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md) for Phase 3 matching details
+- **Phase 4**: See [PHASE4_IMPLEMENTATION.md](PHASE4_IMPLEMENTATION.md) for Phase 4 tailoring details
+- **Phase 5**: See [PHASE5_IMPLEMENTATION.md](PHASE5_IMPLEMENTATION.md) for Phase 5 interview prep details
 - **Example Profile**: See [apps/api/example_seed_profile.json](apps/api/example_seed_profile.json)
 
 ## 🔒 Environment Variables
@@ -318,10 +374,13 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - `MONGODB_URI`: MongoDB connection string
 - `MONGODB_DB_NAME`: Database name (default: "jobly")
 - `CORS_ORIGINS`: Comma-separated allowed origins (default: "http://localhost:3000")
-- `OPENAI_API_KEY`: OpenAI API key for embeddings (Phase 3)
+- `OPENAI_API_KEY`: OpenAI API key for embeddings (Phase 3) and LLM (Phase 5)
 - `OPENAI_EMBEDDING_MODEL`: Embedding model name (default: "text-embedding-3-small")
 - `EMBEDDING_PROVIDER`: Provider type (default: "openai")
+- `LLM_PROVIDER`: LLM provider for interview prep (default: "openai")
+- `LLM_MODEL`: LLM model for structured generation (default: "gpt-4o-mini")
 - `MATCH_WEIGHT_*`: Optional scoring weights for match components
+- `PACKETS_DIR`: Directory for packet file storage (default: "/tmp/jobly_packets")
 
 ### Frontend (apps/web/.env.local)
 - `NEXT_PUBLIC_API_URL`: Backend API URL (default: "http://localhost:8000")
@@ -346,10 +405,24 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - Swappable embedding providers
 - Match ranking and filtering UI
 
+**✅ Phase 4 - COMPLETE**: Tailored CV Generation & Application Packets
+- LaTeX CV generation with job-specific tailoring
+- Complete application packets (CV, cover letter, recruiter message, answers)
+- PDF compilation support
+- Truthful output with integrity notes
+- Gap analysis and skill prioritization
+
+**✅ Phase 5 - COMPLETE**: AI-Powered Interview Preparation
+- LLM-powered interview pack generation
+- STAR stories grounded in real experience
+- 30/60/90 day plans
+- Gap-aware technical Q&A
+- Searchable question library
+- Markdown export for offline study
+
 **🔜 Future Phases** (Not Yet Implemented):
-- Resume tailoring for specific jobs
-- Interview preparation
-- Application tracking
+- Phase 6: Application automation (form filling)
+- Application tracking and status management
 
 ## 📄 License
 
@@ -389,4 +462,29 @@ MIT
 ✅ API endpoints for match computation and retrieval  
 ✅ Matches UI with ranked table and detail modals  
 ✅ All tests passing (50/50 total)  
+✅ Frontend builds successfully  
+
+### Phase 4 ✅
+✅ Tailoring service with skill extraction and gap analysis  
+✅ LaTeX CV generation with Jinja2 templates  
+✅ PDF compilation support (optional)  
+✅ Complete application packets (CV, cover letter, recruiter message, answers)  
+✅ Packet storage with file integrity (SHA256)  
+✅ Truthful output with integrity notes  
+✅ API endpoints for packet generation and retrieval  
+✅ Packet detail UI with download links  
+✅ All tests passing (63/63 total)  
+✅ Frontend builds successfully  
+
+### Phase 5 ✅
+✅ LLM provider abstraction with OpenAI implementation  
+✅ Structured output generation with JSON schema validation  
+✅ Interview pack with 30/60/90 plan, STAR stories, questions, study checklist  
+✅ Technical Q&A with gap-aware prioritization  
+✅ Grounding references linking STAR stories to real experience  
+✅ Content restrictions (job description only, no fabrication)  
+✅ API endpoints for interview generation and retrieval  
+✅ Interview viewer UI with search and filter  
+✅ Markdown export functionality  
+✅ All tests passing (78/78 total)  
 ✅ Frontend builds successfully  
