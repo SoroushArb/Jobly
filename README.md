@@ -170,12 +170,38 @@ Jobly/
 
 - Python 3.10+
 - Node.js 18+
-- MongoDB Atlas account (or local MongoDB)
+- **MongoDB Atlas account** (recommended - free tier works great)
 - OpenAI API key (for Phase 3 matching and Phase 5 interview prep)
+
+## 📖 Documentation
+
+- **[Quickstart Guide](docs/QUICKSTART.md)** - Get up and running in minutes with MongoDB Atlas
+- **[Environment Variables](docs/ENVIRONMENT.md)** - Complete environment variable reference
+- **[Legal & Compliance](docs/LEGAL_COMPLIANCE.md)** - Job source legal guidelines and best practices
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+
+### Per-App Documentation
+
+- **[API Documentation](apps/api/README.md)** - Backend setup, endpoints, and development
+- **[Web Documentation](apps/web/README.md)** - Frontend setup, routes, and workflows
+- **[Local Agent Documentation](apps/local-agent/README.md)** - Browser automation setup and usage
+
+### Phase Implementation Details
+
+- **Phase 1**: [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)
+- **Phase 2**: [PHASE2_IMPLEMENTATION.md](PHASE2_IMPLEMENTATION.md)
+- **Phase 3**: [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md)
+- **Phase 4**: [PHASE4_IMPLEMENTATION.md](PHASE4_IMPLEMENTATION.md)
+- **Phase 5**: [PHASE5_IMPLEMENTATION.md](PHASE5_IMPLEMENTATION.md)
+- **Phase 6**: [PHASE6_IMPLEMENTATION.md](PHASE6_IMPLEMENTATION.md)
 
 ## 🚀 Getting Started
 
+**New to Jobly?** Follow the [Quickstart Guide](docs/QUICKSTART.md) for a step-by-step setup with MongoDB Atlas.
+
 ### Backend Setup
+
+**Recommended**: Use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (free tier available). See [Quickstart Guide](docs/QUICKSTART.md) for detailed Atlas setup.
 
 1. Navigate to the API directory:
 ```bash
@@ -196,10 +222,12 @@ pip install -r requirements.txt
 4. Configure environment variables:
 ```bash
 cp .env.example .env
-# Edit .env with your MongoDB connection string and OpenAI API key
-# Required for Phase 3: OPENAI_API_KEY=your_key_here (embeddings)
-# Required for Phase 5: Same OPENAI_API_KEY (interview generation)
+# Edit .env with your MongoDB Atlas connection string and OpenAI API key
+# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/jobly?...
+# OPENAI_API_KEY=sk-your_key_here
 ```
+
+See [ENVIRONMENT.md](docs/ENVIRONMENT.md) for complete environment variable reference.
 
 5. Run the backend server:
 ```bash
@@ -448,33 +476,31 @@ Once the backend is running, visit:
 
 See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 
-## 📝 Documentation
-
-- **Phase 1**: See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) for Phase 1 details
-- **Phase 2**: See [PHASE2_IMPLEMENTATION.md](PHASE2_IMPLEMENTATION.md) for comprehensive Phase 2 guide
-- **Phase 3**: See [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md) for Phase 3 matching details
-- **Phase 4**: See [PHASE4_IMPLEMENTATION.md](PHASE4_IMPLEMENTATION.md) for Phase 4 tailoring details
-- **Phase 5**: See [PHASE5_IMPLEMENTATION.md](PHASE5_IMPLEMENTATION.md) for Phase 5 interview prep details
-- **Phase 6**: See [PHASE6_IMPLEMENTATION.md](PHASE6_IMPLEMENTATION.md) for Phase 6 automation details
-- **Local Agent**: See [apps/local-agent/README.md](apps/local-agent/README.md) for setup instructions
-- **Example Profile**: See [apps/api/example_seed_profile.json](apps/api/example_seed_profile.json)
-
 ## 🔒 Environment Variables
 
-### Backend (apps/api/.env)
-- `MONGODB_URI`: MongoDB connection string
-- `MONGODB_DB_NAME`: Database name (default: "jobly")
-- `CORS_ORIGINS`: Comma-separated allowed origins (default: "http://localhost:3000")
-- `OPENAI_API_KEY`: OpenAI API key for embeddings (Phase 3) and LLM (Phase 5)
-- `OPENAI_EMBEDDING_MODEL`: Embedding model name (default: "text-embedding-3-small")
-- `EMBEDDING_PROVIDER`: Provider type (default: "openai")
-- `LLM_PROVIDER`: LLM provider for interview prep (default: "openai")
-- `LLM_MODEL`: LLM model for structured generation (default: "gpt-4o-mini")
-- `MATCH_WEIGHT_*`: Optional scoring weights for match components
-- `PACKETS_DIR`: Directory for packet file storage (default: "/tmp/jobly_packets")
+**MongoDB Atlas** (recommended):
+- Free M0 tier available
+- Automatic backups and scaling
+- Simple connection string setup
 
-### Frontend (apps/web/.env.local)
-- `NEXT_PUBLIC_API_URL`: Backend API URL (default: "http://localhost:8000")
+See [ENVIRONMENT.md](docs/ENVIRONMENT.md) for complete environment variable reference and setup guide.
+
+### Quick Reference
+
+**Backend** (`apps/api/.env`):
+- `MONGODB_URI` - MongoDB Atlas connection string (required)
+- `OPENAI_API_KEY` - OpenAI API key (required for Phase 3+)
+- `MONGODB_DB_NAME` - Database name (default: "jobly")
+- `CORS_ORIGINS` - Allowed CORS origins
+- Plus optional: embedding/LLM models, match weights, packet directory
+
+**Frontend** (`apps/web/.env.local`):
+- `NEXT_PUBLIC_API_URL` - Backend API URL (default: "http://localhost:8000")
+
+**Local Agent** (`apps/local-agent/.env`):
+- `API_URL` - Backend API URL
+- `STOP_BEFORE_SUBMIT` - Safety flag (recommended: true)
+- Plus optional: headless mode, screenshot directory
 
 ## 🤝 Development Phases
 
