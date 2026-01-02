@@ -37,8 +37,10 @@ async def list_cvs(user_email: str = Query(..., description="User email")):
         
         cvs = []
         async for cv_doc in cursor:
-            # Convert MongoDB _id to string
-            cv_doc["_id"] = str(cv_doc["_id"])
+            # Convert MongoDB _id to string and map to id field
+            if "_id" in cv_doc:
+                cv_doc["id"] = str(cv_doc["_id"])
+                del cv_doc["_id"]
             cvs.append(CVDocumentInDB(**cv_doc))
         
         return CVListResponse(
@@ -181,7 +183,8 @@ async def get_active_cv(user_email: str = Query(..., description="User email")):
             )
         
         # Convert MongoDB _id to string
-        cv_doc["_id"] = str(cv_doc["_id"])
+        cv_doc["id"] = str(cv_doc["_id"])
+        del cv_doc["_id"]
         
         return CVDocumentInDB(**cv_doc)
     

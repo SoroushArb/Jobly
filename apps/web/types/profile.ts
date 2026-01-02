@@ -73,7 +73,7 @@ export interface ProfileSaveResponse {
 }
 
 export interface CVDocument {
-  _id?: string;
+  id?: string;
   user_email: string;
   filename: string;
   extracted_text: string;

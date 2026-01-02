@@ -2,7 +2,7 @@
 CV Document schemas for multi-CV support
 """
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -14,12 +14,14 @@ class CVDocument(BaseModel):
     extracted_text: str
     parsed_profile: dict  # Snapshot of UserProfile as dict
     is_active: bool = False
-    upload_date: datetime = datetime.utcnow()
+    upload_date: datetime = Field(default_factory=datetime.utcnow)
 
 
 class CVDocumentInDB(CVDocument):
     """CV document as stored in MongoDB"""
-    _id: Optional[str] = None
+    id: Optional[str] = Field(None, alias="_id")
+    
+    model_config = ConfigDict(populate_by_name=True)
     
 
 class CVDocumentResponse(BaseModel):

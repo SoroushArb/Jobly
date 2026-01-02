@@ -48,7 +48,7 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
       await fetchCVs();
       
       // Notify parent component
-      const activeCv = cvs.find(cv => cv._id === cvId);
+      const activeCv = cvs.find(cv => cv.id === cvId);
       if (activeCv && onCVSelected) {
         onCVSelected(activeCv);
       }
@@ -113,7 +113,7 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
       <div className="space-y-3">
         {cvs.map((cv) => (
           <div
-            key={cv._id}
+            key={cv.id}
             className={`border rounded-lg p-4 ${
               cv.is_active ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
             }`}
@@ -140,14 +140,14 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
               <div className="flex gap-2">
                 {!cv.is_active && (
                   <button
-                    onClick={() => handleSetActive(cv._id!)}
+                    onClick={() => handleSetActive(cv.id!)}
                     className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
                   >
                     Set Active
                   </button>
                 )}
                 <button
-                  onClick={() => handleDelete(cv._id!)}
+                  onClick={() => handleDelete(cv.id!)}
                   className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
                 >
                   Delete
