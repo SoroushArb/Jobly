@@ -19,6 +19,7 @@ export default function JobsPage() {
     country: '',
     city: '',
     keyword: '',
+    title: '',
     page: 1,
     per_page: 50
   });
@@ -34,6 +35,7 @@ export default function JobsPage() {
       if (filters.remote_type) params.append('remote_type', filters.remote_type);
       if (filters.country) params.append('country', filters.country);
       if (filters.city) params.append('city', filters.city);
+      if (filters.title) params.append('title', filters.title);
       if (filters.keyword) params.append('keyword', filters.keyword);
       params.append('page', filters.page?.toString() || '1');
       params.append('per_page', filters.per_page?.toString() || '50');
@@ -123,8 +125,23 @@ export default function JobsPage() {
 
         {/* Filters */}
         <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <h2 className="text-lg font-semibold mb-4">Search & Filter Jobs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Job Title (Specific Search) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Job Title
+              </label>
+              <input
+                type="text"
+                value={filters.title || ''}
+                onChange={(e) => handleFilterChange('title', e.target.value)}
+                placeholder="e.g., Software Engineer"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">Search in job titles specifically</p>
+            </div>
+
             {/* Remote Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -170,34 +187,34 @@ export default function JobsPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            {/* Keyword */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Keyword
-              </label>
-              <input
-                type="text"
-                value={filters.keyword}
-                onChange={(e) => handleFilterChange('keyword', e.target.value)}
-                placeholder="Search title, company..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
           </div>
 
+          {/* General Keyword Search */}
           <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Keyword Search (searches in title, company, description)
+            </label>
+            <input
+              type="text"
+              value={filters.keyword}
+              onChange={(e) => handleFilterChange('keyword', e.target.value)}
+              placeholder="Search across all fields..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mt-4 flex gap-2">
             <button
               onClick={applyFilters}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold"
             >
               Apply Filters
             </button>
             <button
               onClick={() => {
-                setFilters({ remote_type: '', country: '', city: '', keyword: '', page: 1, per_page: 50 });
+                setFilters({ remote_type: '', country: '', city: '', keyword: '', title: '', page: 1, per_page: 50 });
               }}
-              className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
               Clear Filters
             </button>

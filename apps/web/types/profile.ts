@@ -71,3 +71,19 @@ export interface ProfileSaveResponse {
   profile_id: string;
   message: string;
 }
+
+export interface CVDocument {
+  _id?: string;
+  user_email: string;
+  filename: string;
+  extracted_text: string;
+  parsed_profile: UserProfile;
+  is_active: boolean;
+  upload_date: string;
+}
+
+export interface CVListResponse {
+  cvs: CVDocument[];
+  total: number;
+  message: string;
+}

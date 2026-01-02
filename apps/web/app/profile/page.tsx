@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CVUpload from '@/components/CVUpload';
+import CVSelector from '@/components/CVSelector';
 import ExtractedTextPreview from '@/components/ExtractedTextPreview';
 import ProfileEditor from '@/components/ProfileEditor';
 import PreferencesEditor from '@/components/PreferencesEditor';
 import { UserProfile } from '@/types/profile';
-import { saveProfile } from '@/lib/api';
+import { saveProfile, savePreferences } from '@/lib/api';
 
 export default function ProfilePage() {
   const [extractedText, setExtractedText] = useState<string>('');
@@ -14,12 +15,21 @@ export default function ProfilePage() {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'profile' | 'preferences'>('profile');
+  const [savingPreferences, setSavingPreferences] = useState(false);
 
   const handleUploadSuccess = (text: string, draftProfile: UserProfile) => {
     setExtractedText(text);
     setProfile(draftProfile);
     setError('');
-    setSuccess('CV uploaded and parsed successfully!');
+    setSuccess('CV uploaded and parsed successfully! Review your profile below.');
+    
+    // Auto-scroll to profile section
+    setTimeout(() => {
+      const profileSection = document.getElementById('profile-section');
+      if (profileSection) {
+        profileSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleUploadError = (errorMsg: string) => {
@@ -30,11 +40,13 @@ export default function ProfilePage() {
   const handleSaveProfile = async (updatedProfile: UserProfile) => {
     try {
       setError('');
+      setSuccess('');
       const response = await saveProfile(updatedProfile);
-      setSuccess(`Profile saved successfully! ID: ${response.profile_id}`);
+      setSuccess(`Profile saved successfully! ${response.message}`);
       setProfile(updatedProfile);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save profile');
+      const errorMsg = err instanceof Error ? err.message : 'Failed to save profile';
+      setError(errorMsg);
       throw err;
     }
   };
@@ -45,13 +57,39 @@ export default function ProfilePage() {
     }
   };
 
+  const handleSavePreferences = async () => {
+    if (!profile) return;
+    
+    setSavingPreferences(true);
+    setError('');
+    setSuccess('');
+    
+    try {
+      const response = await savePreferences(profile.email, profile.preferences);
+      setSuccess(`Preferences saved successfully! ${response.message}`);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to save preferences';
+      setError(errorMsg);
+    } finally {
+      setSavingPreferences(false);
+    }
+  };
+
+  const handleCVSelected = (cv: any) => {
+    // When a CV is set as active, load its profile
+    if (cv && cv.parsed_profile) {
+      setProfile(cv.parsed_profile);
+      setSuccess('Active CV profile loaded!');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900">Profile Management</h1>
           <p className="mt-2 text-lg text-gray-600">
-            Upload your CV and manage your job search profile
+            Upload your CV, manage multiple profiles, and configure job search preferences
           </p>
         </div>
 
@@ -70,12 +108,20 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Upload Section */}
-        {!profile && (
+        {/* Upload Section - Always visible */}
+        <div className="mb-8">
+          <CVUpload
+            onUploadSuccess={handleUploadSuccess}
+            onUploadError={handleUploadError}
+          />
+        </div>
+
+        {/* CV Library - Show if profile exists (meaning at least one CV was uploaded) */}
+        {profile && (
           <div className="mb-8">
-            <CVUpload
-              onUploadSuccess={handleUploadSuccess}
-              onUploadError={handleUploadError}
+            <CVSelector
+              userEmail={profile.email}
+              onCVSelected={handleCVSelected}
             />
           </div>
         )}
@@ -89,7 +135,7 @@ export default function ProfilePage() {
 
         {/* Profile Editor */}
         {profile && (
-          <div className="space-y-6">
+          <div id="profile-section" className="space-y-6">
             {/* Tabs */}
             <div className="bg-white rounded-lg shadow-md">
               <div className="border-b border-gray-200">
@@ -135,10 +181,11 @@ export default function ProfilePage() {
                     />
                     <div className="mt-6 flex justify-end">
                       <button
-                        onClick={() => handleSaveProfile(profile)}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold"
+                        onClick={handleSavePreferences}
+                        disabled={savingPreferences}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
                       >
-                        Save Preferences
+                        {savingPreferences ? 'Saving...' : 'Save Preferences'}
                       </button>
                     </div>
                   </div>
