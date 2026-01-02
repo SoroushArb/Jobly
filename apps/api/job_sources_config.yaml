@@ -18,6 +18,27 @@ sources:
     compliance_note: "Public RSS feed - Terms of Service compliant"
     rate_limit_seconds: 60
   
+  - name: "We Work Remotely RSS"
+    type: "rss"
+    enabled: true
+    url: "https://weworkremotely.com/categories/remote-programming-jobs.rss"
+    compliance_note: "Public RSS feed - Terms of Service compliant"
+    rate_limit_seconds: 60
+  
+  - name: "Remote.co RSS"
+    type: "rss"
+    enabled: true
+    url: "https://remote.co/remote-jobs/developer/feed/"
+    compliance_note: "Public RSS feed - Terms of Service compliant"
+    rate_limit_seconds: 60
+  
+  - name: "Hacker News Jobs RSS"
+    type: "rss"
+    enabled: true
+    url: "https://hn.algolia.com/api/v1/search_by_date?tags=job&hitsPerPage=50"
+    compliance_note: "Public API - Terms of Service compliant"
+    rate_limit_seconds: 120
+  
   # Company career pages (HTML parsing)
   # These require specific parsing templates per company
   - name: "Google Careers"
@@ -51,3 +72,9 @@ settings:
   user_agent: "Jobly/1.0 (Job Aggregator; +https://github.com/SoroushArb/Jobly)"
   max_retries: 3
   timeout_seconds: 30
+  
+# Compliance notes:
+# - LinkedIn and Indeed: Do NOT scrape without explicit permission or official API access
+# - Use manual import endpoint for jobs from these sources
+# - Only add RSS feeds and career pages that explicitly allow aggregation
+# - Always respect robots.txt and rate limits

@@ -28,6 +28,13 @@ from .packet import (
     PacketResponse,
     PacketListResponse,
 )
+from .cv_document import (
+    CVDocument,
+    CVDocumentInDB,
+    CVDocumentResponse,
+    CVListResponse,
+    SetActiveCVRequest,
+)
 
 __all__ = [
     "Preferences",
@@ -54,4 +61,9 @@ __all__ = [
     "GeneratePacketRequest",
     "PacketResponse",
     "PacketListResponse",
+    "CVDocument",
+    "CVDocumentInDB",
+    "CVDocumentResponse",
+    "CVListResponse",
+    "SetActiveCVRequest",
 ]

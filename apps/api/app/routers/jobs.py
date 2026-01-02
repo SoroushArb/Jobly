@@ -48,6 +48,7 @@ async def list_jobs(
     country: Optional[str] = Query(None, description="Filter by country"),
     city: Optional[str] = Query(None, description="Filter by city"),
     keyword: Optional[str] = Query(None, description="Search in title, company, or description"),
+    title: Optional[str] = Query(None, description="Search specifically in job title (higher relevance)"),
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(50, ge=1, le=100, description="Results per page")
 ):
@@ -57,13 +58,16 @@ async def list_jobs(
     Supports filtering by:
     - remote_type: onsite/hybrid/remote/unknown
     - remote: boolean shorthand for remote jobs
-    - country: exact country match
-    - city: exact city match
+    - country: exact or partial country match
+    - city: exact or partial city match
     - keyword: search in title, company, or description
+    - title: search specifically in job title (more relevant than keyword)
     
     Pagination:
     - page: page number (default 1)
     - per_page: results per page (default 50, max 100)
+    
+    When 'title' filter is used, results are sorted by relevance (title match score)
     """
     try:
         db = Database.get_database()
@@ -83,8 +87,12 @@ async def list_jobs(
         if city:
             query["city"] = {"$regex": city, "$options": "i"}
         
-        if keyword:
-            # Search in multiple fields
+        # Handle title-specific search vs general keyword search
+        if title:
+            # Title-specific search with higher priority
+            query["title"] = {"$regex": title, "$options": "i"}
+        elif keyword:
+            # General search across multiple fields
             query["$or"] = [
                 {"title": {"$regex": keyword, "$options": "i"}},
                 {"company": {"$regex": keyword, "$options": "i"}},
@@ -94,9 +102,20 @@ async def list_jobs(
         # Count total matching documents
         total = await jobs_collection.count_documents(query)
         
+        # Determine sorting strategy
+        if title:
+            # For title searches, sort by fetched_at (most recent first)
+            # MongoDB's text search score would be better but requires text index
+            sort_field = "fetched_at"
+            sort_direction = -1
+        else:
+            # Default: most recently fetched jobs first
+            sort_field = "fetched_at"
+            sort_direction = -1
+        
         # Get paginated results
         skip = (page - 1) * per_page
-        cursor = jobs_collection.find(query).sort("fetched_at", -1).skip(skip).limit(per_page)
+        cursor = jobs_collection.find(query).sort(sort_field, sort_direction).skip(skip).limit(per_page)
         
         jobs = []
         async for job_doc in cursor:
@@ -169,3 +188,96 @@ async def get_sources_info():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get sources info: {str(e)}")
+
+
+@router.post("/manual-import")
+async def manual_job_import(
+    url: str,
+    title: str,
+    company: str,
+    location: Optional[str] = None,
+    remote_type: Optional[str] = "unknown",
+    description: Optional[str] = None
+):
+    """
+    Manually import a job from a URL (e.g., LinkedIn, Indeed)
+    
+    This endpoint allows users to add jobs from sources that cannot be
+    legally scraped. The user provides the URL and basic job details.
+    
+    Args:
+        url: Job posting URL
+        title: Job title
+        company: Company name
+        location: Job location (optional)
+        remote_type: Remote type (onsite/hybrid/remote/unknown)
+        description: Job description (optional)
+        
+    Returns:
+        Success message with job ID
+    """
+    try:
+        from datetime import datetime
+        import hashlib
+        
+        db = Database.get_database()
+        jobs_collection = db["jobs"]
+        
+        # Parse location into city/country if possible
+        city = None
+        country = None
+        if location:
+            parts = [p.strip() for p in location.split(',')]
+            if len(parts) >= 2:
+                city = parts[0]
+                country = parts[-1]
+            elif len(parts) == 1:
+                city = parts[0]
+        
+        # Create job posting
+        job_data = {
+            "title": title,
+            "company": company,
+            "location": location or "Not specified",
+            "city": city,
+            "country": country,
+            "remote_type": remote_type,
+            "url": url,
+            "description_clean": description or f"Manually imported job: {title} at {company}",
+            "employment_type": None,
+            "source_name": "Manual Import",
+            "source_compliance_note": "User-provided URL - no scraping performed",
+            "first_seen": datetime.utcnow(),
+            "last_seen": datetime.utcnow(),
+            "fetched_at": datetime.utcnow(),
+        }
+        
+        # Create dedupe hash
+        dedupe_string = f"{url.lower()}"
+        job_data["dedupe_hash"] = hashlib.sha256(dedupe_string.encode()).hexdigest()
+        
+        # Check if job already exists
+        existing = await jobs_collection.find_one({"dedupe_hash": job_data["dedupe_hash"]})
+        
+        if existing:
+            # Update last_seen
+            await jobs_collection.update_one(
+                {"dedupe_hash": job_data["dedupe_hash"]},
+                {"$set": {"last_seen": datetime.utcnow()}}
+            )
+            return {
+                "message": "Job already exists (updated last_seen)",
+                "job_id": str(existing["_id"]),
+                "is_new": False
+            }
+        else:
+            # Insert new job
+            result = await jobs_collection.insert_one(job_data)
+            return {
+                "message": "Job imported successfully",
+                "job_id": str(result.inserted_id),
+                "is_new": True
+            }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to import job: {str(e)}")

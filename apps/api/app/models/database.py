@@ -81,3 +81,9 @@ def get_prefill_logs_collection():
     db = Database.get_database()
     return db["prefill_logs"]
 
+
+def get_cv_documents_collection():
+    """Get the CV documents collection"""
+    db = Database.get_database()
+    return db["cv_documents"]
+
