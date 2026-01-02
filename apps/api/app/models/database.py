@@ -51,3 +51,15 @@ def get_packets_collection():
     db = Database.get_database()
     return db["packets"]
 
+
+def get_interview_packs_collection():
+    """Get the interview packs collection"""
+    db = Database.get_database()
+    return db["interview_packs"]
+
+
+def get_technical_qa_collection():
+    """Get the technical QA collection"""
+    db = Database.get_database()
+    return db["technical_qa"]
+
