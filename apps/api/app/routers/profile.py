@@ -19,6 +19,38 @@ from typing import Optional
 router = APIRouter(prefix="/profile", tags=["profile"])
 
 
+def _should_update_field(key: str, value: any, is_update: bool) -> bool:
+    """
+    Determine if a field should be updated in the profile.
+    
+    Args:
+        key: Field name
+        value: Field value
+        is_update: True if updating existing profile, False if creating new
+        
+    Returns:
+        True if field should be updated, False otherwise
+    """
+    # Always update metadata fields
+    if key in ["updated_at", "schema_version"]:
+        return True
+    
+    # For new profiles, include all non-None values
+    if not is_update:
+        return value is not None
+    
+    # For updates, only update if value is truthy or explicitly provided
+    if value is None:
+        return False
+    
+    # For lists/dicts, only update if not empty (prevents accidental clearing)
+    if isinstance(value, (list, dict)):
+        return len(value) > 0
+    
+    # For other types, update if value exists
+    return True
+
+
 @router.post("/upload-cv", response_model=UploadCVResponse)
 async def upload_cv(file: UploadFile = File(...)):
     """
@@ -123,22 +155,12 @@ async def save_profile(profile: UserProfile):
         existing = await collection.find_one({"email": profile.email})
         
         if existing:
-            # For updates, only update fields that are not None/empty
+            # For updates, only update fields that should be updated
             # to prevent accidental data loss
             update_dict = {}
             for key, value in profile_dict.items():
-                # Always update these fields
-                if key in ["updated_at", "schema_version"]:
+                if _should_update_field(key, value, is_update=True):
                     update_dict[key] = value
-                # For other fields, only update if value is truthy or explicitly set
-                elif value is not None:
-                    if isinstance(value, (list, dict)):
-                        if value:  # Only update if list/dict is not empty
-                            update_dict[key] = value
-                        elif key in profile_dict:  # But allow explicit empty values
-                            update_dict[key] = value
-                    else:
-                        update_dict[key] = value
             
             # Update existing profile
             result = await collection.update_one(
@@ -148,8 +170,14 @@ async def save_profile(profile: UserProfile):
             profile_id = str(existing["_id"])
             action = "updated"
         else:
+            # For new profiles, include all provided fields
+            insert_dict = {
+                k: v for k, v in profile_dict.items()
+                if _should_update_field(k, v, is_update=False)
+            }
+            
             # Insert new profile
-            result = await collection.insert_one(profile_dict)
+            result = await collection.insert_one(insert_dict)
             profile_id = str(result.inserted_id)
             action = "created"
         

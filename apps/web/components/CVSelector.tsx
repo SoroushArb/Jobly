@@ -40,6 +40,11 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
     setError('');
     setSuccess('');
     
+    if (!cvId) {
+      setError('Invalid CV ID');
+      return;
+    }
+    
     try {
       await setActiveCV(cvId, userEmail);
       setSuccess('CV set as active successfully!');
@@ -58,6 +63,11 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
   };
 
   const handleDelete = async (cvId: string) => {
+    if (!cvId) {
+      setError('Invalid CV ID');
+      return;
+    }
+    
     if (!confirm('Are you sure you want to delete this CV? This action cannot be undone.')) {
       return;
     }
@@ -138,7 +148,7 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
               </div>
 
               <div className="flex gap-2">
-                {!cv.is_active && (
+                {!cv.is_active && cv.id && (
                   <button
                     onClick={() => handleSetActive(cv.id!)}
                     className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700"
@@ -146,12 +156,14 @@ export default function CVSelector({ userEmail, onCVSelected }: CVSelectorProps)
                     Set Active
                   </button>
                 )}
-                <button
-                  onClick={() => handleDelete(cv.id!)}
-                  className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
-                >
-                  Delete
-                </button>
+                {cv.id && (
+                  <button
+                    onClick={() => handleDelete(cv.id!)}
+                    className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
           </div>

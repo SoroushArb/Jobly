@@ -209,7 +209,7 @@ async def manual_job_import(
         url: Job posting URL
         title: Job title
         company: Company name
-        location: Job location (optional)
+        location: Job location (optional, format: "City, Country" or "City")
         remote_type: Remote type (onsite/hybrid/remote/unknown)
         description: Job description (optional)
         
@@ -223,11 +223,12 @@ async def manual_job_import(
         db = Database.get_database()
         jobs_collection = db["jobs"]
         
-        # Parse location into city/country if possible
+        # Parse location into city/country if provided
         city = None
         country = None
-        if location:
-            parts = [p.strip() for p in location.split(',')]
+        if location and location.strip():
+            # Expected format: "City, Country" or just "City"
+            parts = [p.strip() for p in location.split(',') if p.strip()]
             if len(parts) >= 2:
                 city = parts[0]
                 country = parts[-1]
@@ -252,7 +253,7 @@ async def manual_job_import(
             "fetched_at": datetime.utcnow(),
         }
         
-        # Create dedupe hash
+        # Create dedupe hash based on URL
         dedupe_string = f"{url.lower()}"
         job_data["dedupe_hash"] = hashlib.sha256(dedupe_string.encode()).hexdigest()
         
