@@ -8,6 +8,7 @@ from app.routers import (
     interview_router,
     applications_router,
     prefill_router,
+    cvs_router,
 )
 from app.models import Database
 import os
@@ -34,6 +35,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(profile_router)
+app.include_router(cvs_router)
 app.include_router(jobs_router)
 app.include_router(matches_router)
 app.include_router(packets_router)
@@ -65,6 +67,7 @@ async def root():
         "endpoints": {
             "docs": "/docs",
             "profile": "/profile",
+            "cvs": "/cvs",
             "jobs": "/jobs",
             "matches": "/matches",
             "packets": "/packets",

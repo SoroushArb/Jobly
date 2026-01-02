@@ -64,6 +64,7 @@ export interface JobFilters {
   country?: string;
   city?: string;
   keyword?: string;
+  title?: string;
   page?: number;
   per_page?: number;
 }

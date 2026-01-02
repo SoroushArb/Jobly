@@ -8,15 +8,20 @@ A comprehensive job hunting platform that helps you manage your professional pro
 
 ### Phase 1: Profile Management
 - **CV Upload & Parsing**: Upload PDF/DOCX files and automatically extract structured profile data
+- **Multi-CV Support**: Upload and manage multiple CVs, switch between them for different job applications
 - **Profile Management**: Create, edit, and manage your professional profile
-- **Job Preferences**: Set location, language, skill, and role preferences
+- **Job Preferences**: Set location, language, skill, and role preferences with working save functionality
 - **Evidence Tracking**: See where each piece of information came from in your CV
 - **MongoDB Storage**: Persistent storage with MongoDB Atlas
+- **CV Library**: View all uploaded CVs, set active CV for matching
 
 ### Phase 2: Job Ingestion
 - **Job Ingestion**: Automatically fetch jobs from legal RSS feeds and company career pages
+- **Multiple Sources**: Supports Stack Overflow, RemoteOK, We Work Remotely, Remote.co, Hacker News, and more
+- **Manual Job Import**: Import jobs from LinkedIn/Indeed by providing URL and basic info (no scraping required)
 - **Smart Deduplication**: SHA256-based deduplication prevents duplicate job postings
-- **Advanced Filtering**: Filter by remote type, location, and keywords
+- **Advanced Filtering**: Filter by remote type, location, job title, and keywords
+- **Title-Specific Search**: Dedicated job title search for more relevant results
 - **Source Compliance**: Only configured sources with compliance notes are used
 - **Rate Limiting**: Polite fetching with configurable rate limits
 - **Job Discovery**: Browse jobs in a beautiful table interface with detail modals
@@ -270,14 +275,21 @@ The web app will be available at http://localhost:3000
 2. **Review Extracted Data**: See the raw extracted text and auto-populated profile
 3. **Edit Profile**: Update your name, email, skills, experience, and other details
 4. **Set Preferences**: Configure your job search preferences (location, remote, skills, etc.)
-5. **Save**: Save your profile to MongoDB for persistence
+5. **Save**: Click "Save Profile" or "Save Preferences" to persist your data
+6. **Multi-CV**: Upload multiple CVs and switch between them using the CV Library section
+7. **Set Active CV**: Choose which CV to use for job matching and applications
 
 ### Job Browsing (Phase 2)
 1. **Browse Jobs**: Visit http://localhost:3000/jobs to see available job postings
 2. **Trigger Ingestion**: Click "Trigger Job Ingestion" to fetch latest jobs from configured sources
-3. **Filter Jobs**: Use filters for remote type, country, city, and keyword search
+3. **Filter Jobs**: Use filters for:
+   - **Job Title**: Search specifically in job titles for better relevance
+   - **Remote Type**: Filter by remote, hybrid, onsite, or unknown
+   - **Country/City**: Filter by location
+   - **Keyword**: Search across title, company, and description
 4. **View Details**: Click "View" on any job to see full details in a modal
 5. **Apply**: Click "Apply →" to visit the original job posting
+6. **Manual Import**: Import jobs from LinkedIn/Indeed using the manual import feature (no scraping)
 
 ### Job Matching (Phase 3)
 1. **Ensure Prerequisites**: Make sure you have:
@@ -437,16 +449,24 @@ Once the backend is running, visit:
 ### Key Endpoints
 
 **Profile Management:**
-- `POST /profile/upload-cv`: Upload and parse CV
+- `POST /profile/upload-cv`: Upload and parse CV (now stores CV document and returns CV ID)
 - `POST /profile/save`: Save profile to database
 - `GET /profile`: Retrieve saved profile
 - `PATCH /profile`: Update profile fields
+- `POST /profile/preferences/save`: Save job search preferences with confirmation
+
+**CV Management (Multi-CV):**
+- `GET /cvs`: List all CVs for a user
+- `POST /cvs/set-active`: Set a CV as active for matching
+- `DELETE /cvs/{cv_id}`: Delete a CV
+- `GET /cvs/active`: Get currently active CV
 
 **Job Management (Phase 2):**
 - `POST /jobs/ingest`: Trigger job ingestion from configured sources
-- `GET /jobs`: List jobs with filters (remote, country, city, keyword)
+- `GET /jobs`: List jobs with filters (remote, country, city, keyword, title)
 - `GET /jobs/{id}`: Get single job posting
 - `GET /jobs/sources/info`: Get configured sources information
+- `POST /jobs/manual-import`: Manually import a job from URL (for LinkedIn/Indeed)
 
 **Match Management (Phase 3):**
 - `POST /matches/recompute`: Recompute all matches for current profile
