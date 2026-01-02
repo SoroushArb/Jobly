@@ -1,6 +1,6 @@
 """Interview preparation service using LLM for structured generation"""
 import re
-from typing import List, Dict
+from typing import List, Dict, Optional
 from app.schemas.interview import (
     InterviewPack,
     TechnicalQA,
@@ -128,7 +128,7 @@ class InterviewPrepService:
             # Fallback: return first paragraph
             return " ".join(lines[:3]) if lines else f"Details available in job description for {job.title}"
     
-    def _extract_company_digest(self, job: JobPosting) -> tuple[str, Optional[str]]:
+    def _extract_company_digest(self, job: JobPosting) -> tuple[str, str | None]:
         """
         Extract company info from job description only
         
@@ -460,10 +460,15 @@ IMPORTANT: Output must be in English only."""
             "cloud": ["aws", "azure", "gcp", "cloud"],
         }
         
+        # Use set for faster lookups
+        priority_set = set(priority_topics)
+        
         for topic, keywords in technical_keywords.items():
             if any(keyword in job_desc for keyword in keywords):
-                if topic.title() not in priority_topics:
-                    priority_topics.append(topic.title())
+                topic_title = topic.title()
+                if topic_title not in priority_set:
+                    priority_topics.append(topic_title)
+                    priority_set.add(topic_title)
         
         return priority_topics[:7]  # Limit to 7 topics
     

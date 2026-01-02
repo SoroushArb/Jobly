@@ -25,8 +25,9 @@ export default function InterviewPage() {
         setInterviewPack(response.interview_pack);
         setTechnicalQA(response.technical_qa);
         setError(null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load interview materials');
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load interview materials';
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -37,6 +38,15 @@ export default function InterviewPage() {
 
   const exportToMarkdown = () => {
     if (!interviewPack || !technicalQA) return;
+
+    // Sanitize company name for filename
+    const sanitizeFilename = (name: string): string => {
+      return name
+        .replace(/[^a-zA-Z0-9-_]/g, '-')  // Replace special chars with dash
+        .replace(/-+/g, '-')                // Collapse multiple dashes
+        .replace(/^-|-$/g, '')              // Remove leading/trailing dashes
+        .toLowerCase();
+    };
 
     let markdown = `# Interview Preparation Pack\n\n`;
     markdown += `**Company:** ${interviewPack.company_name}\n`;
@@ -109,7 +119,7 @@ export default function InterviewPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `interview-prep-${interviewPack.company_name.replace(/\s+/g, '-')}.md`;
+    a.download = `interview-prep-${sanitizeFilename(interviewPack.company_name)}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
