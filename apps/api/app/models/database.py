@@ -63,3 +63,21 @@ def get_technical_qa_collection():
     db = Database.get_database()
     return db["technical_qa"]
 
+
+def get_applications_collection():
+    """Get the applications collection"""
+    db = Database.get_database()
+    return db["applications"]
+
+
+def get_prefill_intents_collection():
+    """Get the prefill intents collection"""
+    db = Database.get_database()
+    return db["prefill_intents"]
+
+
+def get_prefill_logs_collection():
+    """Get the prefill logs collection"""
+    db = Database.get_database()
+    return db["prefill_logs"]
+

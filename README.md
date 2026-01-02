@@ -1,8 +1,8 @@
 # Jobly
 
-AI Job Hunter Agent - **Now with Phase 5: AI-Powered Interview Preparation!**
+AI Job Hunter Agent - **Now with Phase 6: Playwright-based Application Automation!**
 
-A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, get AI-powered job recommendations, generate tailored application materials, and prepare for interviews with AI-generated materials.
+A comprehensive job hunting platform that helps you manage your professional profile, browse curated job postings from legal sources, get AI-powered job recommendations, generate tailored application materials, prepare for interviews with AI-generated materials, and automate form filling with a local browser assistant.
 
 ## 🚀 Features
 
@@ -77,12 +77,39 @@ A comprehensive job hunting platform that helps you manage your professional pro
   - Safe fallback on failures
 - **Export to Markdown**: Download complete prep pack for offline study
 
+### Phase 6: Application Automation & Tracking (NEW!)
+- **Local Browser Automation**: Playwright-based prefill assistant
+  - Runs on your macOS machine (not in cloud)
+  - Opens real browser to job application pages
+  - Automatically detects ATS type (Greenhouse, Lever, etc.)
+  - Prefills form fields with your profile data
+  - Attaches your tailored CV PDF
+  - Takes screenshots at each step
+  - Stops before submit for safety and review
+- **Security-First Design**: Short-lived tokens and local execution
+  - 15-minute token expiry
+  - Tokens shown only once
+  - No passwords stored
+  - All automation happens locally
+- **Application Tracking**: Full pipeline management
+  - Track applications from prepared to offered
+  - Status history with audit trail
+  - Notes and deadline tracking
+  - Visual dashboard with filtering
+- **ATS Support**: 
+  - ✅ Greenhouse (fully implemented)
+  - ✅ Lever (fully implemented)
+  - ✅ Generic fallback for unknown systems
+  - 🚧 Workday (detection only)
+  - 🚧 LinkedIn Easy Apply (detection only)
+
 ## 📁 Project Structure
 
 This is a monorepo containing:
 
-- **`apps/api`**: FastAPI backend for CV processing, profile management, and job ingestion
-- **`apps/web`**: Next.js frontend for profile management and job browsing UI
+- **`apps/api`**: FastAPI backend for CV processing, profile management, job ingestion, and application tracking
+- **`apps/web`**: Next.js frontend for profile management, job browsing, and application tracking UI
+- **`apps/local-agent`**: Node.js + Playwright local automation agent for form prefilling
 
 ```
 Jobly/
@@ -96,12 +123,19 @@ Jobly/
 │   │   │   └── main.py      # FastAPI application
 │   │   ├── tests/           # Backend tests
 │   │   └── requirements.txt
-│   └── web/          # Next.js frontend
-│       ├── app/             # Next.js pages
-│       ├── components/      # React components
-│       ├── lib/             # API client
-│       ├── types/           # TypeScript types
-│       └── package.json
+│   ├── web/          # Next.js frontend
+│   │   ├── app/             # Next.js pages
+│   │   ├── components/      # React components
+│   │   ├── lib/             # API client
+│   │   ├── types/           # TypeScript types
+│   │   └── package.json
+│   └── local-agent/  # Playwright automation agent
+│       ├── src/
+│       │   ├── adapters/    # ATS adapters
+│       │   ├── utils/       # API client & services
+│       │   └── index.ts     # Entry point
+│       ├── package.json
+│       └── README.md
 └── README.md
 ```
 
@@ -116,6 +150,12 @@ Jobly/
 - **Jinja2**: Template engine for LaTeX CV generation
 - **PyMuPDF**: PDF text extraction
 - **python-docx**: DOCX text extraction
+
+### Local Agent
+- **Node.js 18+**: JavaScript runtime
+- **TypeScript**: Type-safe development
+- **Playwright**: Browser automation framework
+- **Axios**: HTTP client for API communication
 - **httpx**: Async HTTP client for job fetching
 - **feedparser**: RSS/Atom feed parsing
 - **selectolax**: High-performance HTML parsing (5-25x faster than BeautifulSoup)
@@ -263,6 +303,44 @@ The web app will be available at http://localhost:3000
 5. **Export**: Download complete prep pack as Markdown for offline study
 6. **Prepare**: Practice STAR stories, review technical answers, study gaps
 
+### Application Automation (Phase 6)
+1. **Setup Local Agent** (one-time):
+   ```bash
+   cd apps/local-agent
+   npm install
+   npx playwright install chromium
+   ```
+
+2. **Create Application**: From Packet page, click "Open & Prefill"
+   - System creates application record
+   - Generates prefill intent with short-lived token
+   - UI displays command to run
+
+3. **Run Local Agent**: Copy command from UI and run in terminal
+   ```bash
+   npm run dev -- <intent_id> <auth_token>
+   ```
+
+4. **Watch Automation**:
+   - Browser launches automatically
+   - Navigates to job application page
+   - Detects ATS type (Greenhouse, Lever, etc.)
+   - Fills form fields with your data
+   - Uploads tailored resume
+   - Takes screenshots
+   - Stops before submit (safety!)
+
+5. **Review & Submit**:
+   - Review filled form in browser
+   - Correct any errors
+   - Answer any custom questions
+   - Click submit manually when satisfied
+
+6. **Track Application**: Go to Applications page
+   - View all applications with status
+   - Filter by status (prepared, prefilled, applied, etc.)
+   - Update status as you progress through pipeline
+
 #### PDF Compilation (Optional)
 To enable PDF generation, install LaTeX on your server:
 
@@ -357,6 +435,17 @@ Once the backend is running, visit:
 - `POST /interview/generate?packet_id=...`: Generate interview preparation materials
 - `GET /interview/{packet_id}`: Get interview pack and technical Q&A
 
+**Application Tracking (Phase 6):**
+- `POST /applications/create`: Create application from packet
+- `GET /applications`: List applications with status filter
+- `GET /applications/{id}`: Get single application
+- `PATCH /applications/{id}/status`: Update application status
+
+**Prefill Automation (Phase 6):**
+- `POST /prefill/create-intent`: Create prefill intent with token
+- `GET /prefill/intent/{id}`: Fetch intent (requires auth token)
+- `POST /prefill/report-result`: Report prefill results from local agent
+
 See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 
 ## 📝 Documentation
@@ -366,6 +455,8 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - **Phase 3**: See [PHASE3_IMPLEMENTATION.md](PHASE3_IMPLEMENTATION.md) for Phase 3 matching details
 - **Phase 4**: See [PHASE4_IMPLEMENTATION.md](PHASE4_IMPLEMENTATION.md) for Phase 4 tailoring details
 - **Phase 5**: See [PHASE5_IMPLEMENTATION.md](PHASE5_IMPLEMENTATION.md) for Phase 5 interview prep details
+- **Phase 6**: See [PHASE6_IMPLEMENTATION.md](PHASE6_IMPLEMENTATION.md) for Phase 6 automation details
+- **Local Agent**: See [apps/local-agent/README.md](apps/local-agent/README.md) for setup instructions
 - **Example Profile**: See [apps/api/example_seed_profile.json](apps/api/example_seed_profile.json)
 
 ## 🔒 Environment Variables
@@ -420,9 +511,18 @@ See [apps/api/README.md](apps/api/README.md) for detailed API documentation.
 - Searchable question library
 - Markdown export for offline study
 
+**✅ Phase 6 - COMPLETE**: Application Automation & Tracking
+- Local Playwright-based prefill assistant
+- Secure token-based authentication
+- ATS detection (Greenhouse, Lever, generic)
+- Automatic form filling and resume upload
+- Screenshot capture at each step
+- Application status tracking pipeline
+- Safety stops before submission
+
 **🔜 Future Phases** (Not Yet Implemented):
-- Phase 6: Application automation (form filling)
-- Application tracking and status management
+- Phase 7: Advanced analytics and insights
+- Phase 8: Team collaboration features
 
 ## 📄 License
 
