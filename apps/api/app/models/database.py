@@ -44,3 +44,10 @@ def get_matches_collection():
     """Get the matches collection"""
     db = Database.get_database()
     return db["matches"]
+
+
+def get_packets_collection():
+    """Get the packets collection"""
+    db = Database.get_database()
+    return db["packets"]
+

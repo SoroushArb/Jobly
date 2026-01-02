@@ -1,0 +1,72 @@
+\documentclass[11pt,a4paper,sans]{moderncv}
+
+% Modern CV theme
+\moderncvstyle{classic}
+\moderncvcolor{blue}
+
+% Character encoding
+\usepackage[utf8]{inputenc}
+
+% Adjust page margins
+\usepackage[scale=0.85]{geometry}
+\setlength{\hintscolumnwidth}{3cm}
+
+% Compact spacing
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*}
+
+% Personal data
+\name{((( name.split()[0] if name.split() else name )))}{((( ' '.join(name.split()[1:]) if name.split()|length > 1 else '' )))}
+(% if email %)
+\email{((( email )))}
+(% endif %)
+(% for link in links[:2] %)
+\social[((( 'linkedin' if 'linkedin' in link.lower() else 'github' if 'github' in link.lower() else 'homepage' )))]{((( link.replace('https://', '').replace('http://', '') )))}
+(% endfor %)
+
+\begin{document}
+
+\makecvtitle
+
+(% if summary %)
+\section{Professional Summary}
+\cvitem{}{((( summary )))}
+(% endif %)
+
+(% if skills %)
+\section{Technical Skills}
+(% for skill_group in skills[:4] %)
+\cvitem{((( skill_group.category )))}{((( ', '.join(skill_group.skills[:12]) )))}
+(% endfor %)
+(% endif %)
+
+(% if experience %)
+\section{Experience}
+(% for exp in experience[:max_roles] %)
+\cventry{((( exp.dates )))}{((( exp.title )))}{((( exp.company )))}{}{}{%
+(% if exp.bullets %)
+\begin{itemize}
+(% for bullet in exp.bullets[:bullets_per_role] %)
+\item ((( bullet.text )))
+(% endfor %)
+\end{itemize}
+(% endif %)
+}
+(% endfor %)
+(% endif %)
+
+(% if projects %)
+\section{Projects}
+(% for project in projects[:max_projects] %)
+\cvitem{((( project.name )))}{((( project.description if project.description else '' )))(% if project.tech %) \textit{((( ', '.join(project.tech[:5]) )))}(% endif %)}
+(% endfor %)
+(% endif %)
+
+(% if education %)
+\section{Education}
+(% for edu in education %)
+\cventry{((( edu.dates if edu.dates else '' )))}{((( edu.degree if edu.degree else '' )))}{((( edu.institution )))}{}{}{(% if edu.field %)((( edu.field )))(% endif %)}
+(% endfor %)
+(% endif %)
+
+\end{document}
