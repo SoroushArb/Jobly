@@ -10,35 +10,55 @@ from app.schemas import (
     JobPostingInDB,
     JobPostingResponse,
     JobListResponse,
-    IngestResponse
+    IngestResponse,
+    JobType,
+    JobResponse,
 )
 from app.models.database import Database
 from app.services.job_ingestion import JobIngestionService
+from app.services.job_service import JobService
+from app.services.sse_service import sse_service
+from app.schemas.sse import SSEEvent, EventType
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 
-@router.post("/ingest", response_model=IngestResponse)
+@router.post("/ingest", response_model=JobResponse)
 async def ingest_jobs():
     """
-    Manual trigger for job ingestion from all configured sources
+    Trigger background job ingestion from all configured sources.
     
-    This endpoint fetches jobs from all enabled sources in job_sources_config.yaml,
-    parses them, and stores them in MongoDB with deduplication.
+    Returns immediately with a job_id. Monitor progress via SSE /events/stream.
     """
     try:
-        service = JobIngestionService()
-        result = await service.ingest_all()
+        job_service = JobService()
         
-        return IngestResponse(
-            jobs_fetched=result["jobs_fetched"],
-            jobs_new=result["jobs_new"],
-            jobs_updated=result["jobs_updated"],
-            sources_processed=result["sources_processed"],
-            message=f"Ingestion completed: {result['jobs_new']} new, {result['jobs_updated']} updated"
+        # Create background job
+        job = await job_service.create_job(
+            job_type=JobType.JOB_INGESTION,
+            params={},
+        )
+        
+        # Emit job created event
+        await sse_service.emit(SSEEvent(
+            event_type=EventType.JOB_CREATED,
+            data={
+                "job_id": job.id,
+                "type": job.type,
+                "status": job.status,
+                "message": "Job ingestion queued"
+            },
+            user_id=job.user_id
+        ))
+        
+        return JobResponse(
+            job_id=job.id,
+            type=job.type,
+            status=job.status,
+            message="Job ingestion started. Monitor progress via /events/stream"
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to start ingestion: {str(e)}")
 
 
 @router.get("", response_model=JobListResponse)
