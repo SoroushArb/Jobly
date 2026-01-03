@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # MongoDB for local development
+  mongodb:
+    image: mongo:7.0
+    container_name: jobly-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: jobly
+      MONGO_INITDB_ROOT_PASSWORD: jobly-dev-password
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - jobly-network
+
+  # API service
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: jobly-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://jobly:jobly-dev-password@mongodb:27017/jobly?authSource=admin
+      - MONGODB_DB_NAME=jobly
+      - CORS_ORIGINS=http://localhost:3000
+      - PORT=8000
+      - USE_GRIDFS=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LLM_PROVIDER=openai
+      - LLM_MODEL=gpt-4o-mini
+      - EMBEDDING_PROVIDER=openai
+      - OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+    depends_on:
+      - mongodb
+    networks:
+      - jobly-network
+    restart: unless-stopped
+
+  # Worker service
+  worker:
+    build:
+      context: ./apps/worker
+      dockerfile: Dockerfile
+    container_name: jobly-worker
+    environment:
+      - MONGODB_URI=mongodb://jobly:jobly-dev-password@mongodb:27017/jobly?authSource=admin
+      - MONGODB_DB_NAME=jobly
+      - USE_GRIDFS=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LLM_PROVIDER=openai
+      - LLM_MODEL=gpt-4o-mini
+      - EMBEDDING_PROVIDER=openai
+      - OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+    depends_on:
+      - mongodb
+      - api
+    networks:
+      - jobly-network
+    restart: unless-stopped
+
+  # Web service (Next.js)
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
+    container_name: jobly-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - PORT=3000
+    depends_on:
+      - api
+    networks:
+      - jobly-network
+    restart: unless-stopped
+
+networks:
+  jobly-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
