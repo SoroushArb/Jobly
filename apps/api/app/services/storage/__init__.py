@@ -6,6 +6,7 @@ import logging
 from .base import ArtifactStorage
 from .gridfs_storage import GridFSStorage
 from .filesystem_storage import FilesystemStorage
+from app.utils import parse_bool
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ def get_storage() -> ArtifactStorage:
     global _storage_instance
     
     if _storage_instance is None:
-        use_gridfs = os.getenv("USE_GRIDFS", "false").lower() in ("true", "1", "yes")
+        use_gridfs = parse_bool(os.getenv("USE_GRIDFS", "false"))
         
         if use_gridfs:
             logger.info("Using GridFS storage for artifacts")

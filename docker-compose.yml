@@ -43,8 +43,8 @@ services:
   # Worker service
   worker:
     build:
-      context: ./apps/worker
-      dockerfile: Dockerfile
+      context: ./apps
+      dockerfile: worker/Dockerfile
     container_name: jobly-worker
     environment:
       - MONGODB_URI=mongodb://jobly:jobly-dev-password@mongodb:27017/jobly?authSource=admin
@@ -73,7 +73,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
       - PORT=3000
     depends_on:
       - api

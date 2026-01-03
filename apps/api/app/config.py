@@ -5,6 +5,7 @@ import os
 import sys
 import logging
 from typing import Optional
+from app.utils import parse_bool
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class Config:
     
     # Storage
     PACKETS_DIR: str = os.getenv("PACKETS_DIR", "/tmp/jobly_packets")
-    USE_GRIDFS: bool = os.getenv("USE_GRIDFS", "false").lower() in ("true", "1", "yes")
+    USE_GRIDFS: bool = parse_bool(os.getenv("USE_GRIDFS", "false"))
     
     # MongoDB URI
     MONGODB_URI: str = os.getenv("MONGODB_URI", "")

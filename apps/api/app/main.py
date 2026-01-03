@@ -100,6 +100,9 @@ async def create_indexes():
     try:
         db = Database.get_database()
         
+        # TTL for events collection (7 days)
+        EVENTS_TTL_SECONDS = 604800  # 7 days in seconds
+        
         # Background jobs indexes
         jobs_col = db["background_jobs"]
         await jobs_col.create_index([("status", 1), ("created_at", 1)])
@@ -130,7 +133,7 @@ async def create_indexes():
         # Events indexes (with TTL for auto-cleanup after 7 days)
         events_col = db["events"]
         await events_col.create_index([("user_id", 1), ("timestamp", -1)])
-        await events_col.create_index([("timestamp", 1)], expireAfterSeconds=604800)
+        await events_col.create_index([("timestamp", 1)], expireAfterSeconds=EVENTS_TTL_SECONDS)
         
         logger.info("Database indexes created successfully")
     except Exception as e:
