@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.routers import (
     profile_router,
     jobs_router,
@@ -14,6 +16,12 @@ from app.routers import (
 )
 from app.models import Database
 from app.config import config
+from app.middleware import (
+    RequestIDMiddleware,
+    http_exception_handler,
+    validation_exception_handler,
+    general_exception_handler
+)
 import os
 import logging
 from dotenv import load_dotenv
@@ -36,6 +44,9 @@ app = FastAPI(
     version="7.0.0"
 )
 
+# Add request ID middleware
+app.add_middleware(RequestIDMiddleware)
+
 # Configure CORS
 origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 
@@ -46,6 +57,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add exception handlers
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
 # Include routers
 app.include_router(profile_router)
