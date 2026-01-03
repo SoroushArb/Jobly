@@ -6,6 +6,8 @@ from .interview import router as interview_router
 from .applications import router as applications_router
 from .prefill import router as prefill_router
 from .cvs import router as cvs_router
+from .events import router as events_router
+from .background_jobs import router as background_jobs_router
 
 __all__ = [
     "profile_router",
@@ -16,4 +18,6 @@ __all__ = [
     "applications_router",
     "prefill_router",
     "cvs_router",
+    "events_router",
+    "background_jobs_router",
 ]

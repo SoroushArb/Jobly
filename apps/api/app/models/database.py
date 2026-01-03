@@ -87,3 +87,9 @@ def get_cv_documents_collection():
     db = Database.get_database()
     return db["cv_documents"]
 
+
+def get_background_jobs_collection():
+    """Get the background jobs collection"""
+    db = Database.get_database()
+    return db["background_jobs"]
+

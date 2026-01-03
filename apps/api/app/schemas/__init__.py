@@ -35,6 +35,15 @@ from .cv_document import (
     CVListResponse,
     SetActiveCVRequest,
 )
+from .job_queue import (
+    JobType,
+    JobStatus,
+    BackgroundJob,
+    BackgroundJobInDB,
+    JobCreateRequest,
+    JobResponse,
+    JobListResponse as JobQueueListResponse,
+)
 
 __all__ = [
     "Preferences",
@@ -66,4 +75,11 @@ __all__ = [
     "CVDocumentResponse",
     "CVListResponse",
     "SetActiveCVRequest",
+    "JobType",
+    "JobStatus",
+    "BackgroundJob",
+    "BackgroundJobInDB",
+    "JobCreateRequest",
+    "JobResponse",
+    "JobQueueListResponse",
 ]
