@@ -57,7 +57,5 @@ docs/**/*.md
 # Logs
 **/*.log
 
-# Docker files
+# Docker files - keeping these for reference, the specific Dockerfile will be used via -f flag
 docker-compose.yml
-**/Dockerfile
-**/.dockerignore
