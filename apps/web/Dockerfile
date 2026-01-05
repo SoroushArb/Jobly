@@ -32,10 +32,14 @@ RUN adduser --system --uid 1001 nextjs
 # Copy necessary files for production
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json* ./package-lock.json
+
+# Install only production dependencies
+RUN npm ci --omit=dev
+
+# Copy the rest of the files
 COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=deps /app/node_modules ./node_modules
 
 USER nextjs
 
