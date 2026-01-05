@@ -46,4 +46,5 @@ USER nextjs
 EXPOSE 3000
 
 # Start with npm run start, binding to dynamic PORT with fallback to 3000
-CMD npm run start -- -p ${PORT:-3000}
+# Using sh -c to ensure proper shell variable expansion
+CMD sh -c "npm run start -- -p ${PORT:-3000}"
