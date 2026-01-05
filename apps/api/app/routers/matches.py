@@ -10,19 +10,22 @@ from app.schemas.match import (
     MatchWithJob,
     MatchInDB,
 )
+from app.schemas.job_queue import JobType, JobResponse
 from app.services.matching.match_service import MatchGenerationService
+from app.services.job_service import JobService
+from app.services.sse_service import sse_service
+from app.schemas.sse import SSEEvent, EventType
 from app.models.database import get_matches_collection, get_jobs_collection, get_profiles_collection
 
 router = APIRouter(prefix="/matches", tags=["matches"])
 
 
-@router.post("/recompute", response_model=RecomputeMatchesResponse)
+@router.post("/recompute", response_model=JobResponse)
 async def recompute_matches():
     """
-    Recompute all matches for the current profile vs stored jobs
+    Trigger background job to recompute all matches.
     
-    Note: This assumes a single profile. In a multi-user system,
-    you would get the profile_id from authentication.
+    Returns immediately with a job_id. Monitor progress via SSE /events/stream.
     """
     # Get the profile (for now, get the first/only profile)
     profiles_collection = get_profiles_collection()
@@ -40,15 +43,30 @@ async def recompute_matches():
     if jobs_count == 0:
         raise HTTPException(status_code=404, detail="No jobs found. Please run job ingestion first.")
     
-    # Recompute matches
-    service = MatchGenerationService()
-    matches_computed = await service.recompute_all_matches(profile_id)
+    # Create background job
+    job_service = JobService()
+    job = await job_service.create_job(
+        job_type=JobType.MATCH_RECOMPUTE,
+        params={"profile_id": profile_id},
+    )
     
-    return RecomputeMatchesResponse(
-        matches_computed=matches_computed,
-        profile_id=profile_id,
-        jobs_processed=jobs_count,
-        message=f"Successfully computed {matches_computed} matches"
+    # Emit job created event
+    await sse_service.emit(SSEEvent(
+        event_type=EventType.JOB_CREATED,
+        data={
+            "job_id": job.id,
+            "type": job.type,
+            "status": job.status,
+            "message": "Match recompute queued"
+        },
+        user_id=job.user_id
+    ))
+    
+    return JobResponse(
+        job_id=job.id,
+        type=job.type,
+        status=job.status,
+        message="Match recompute started. Monitor progress via /events/stream"
     )
 
 

@@ -12,11 +12,15 @@ from app.schemas.packet import (
     PacketInDB,
     TailoringPlan,
 )
+from app.schemas.job_queue import JobType, JobResponse
 from app.schemas.profile import UserProfile
 from app.schemas.job import JobPosting
 from app.models.database import get_profiles_collection, get_jobs_collection
 from app.services.tailoring import TailoringService
 from app.services.packet_storage import PacketStorageService
+from app.services.job_service import JobService
+from app.services.sse_service import sse_service
+from app.schemas.sse import SSEEvent, EventType
 from bson import ObjectId
 
 
@@ -54,80 +58,44 @@ async def get_job_by_id(job_id: str) -> JobPosting:
     return JobPosting(**job_data)
 
 
-@router.post("/generate", response_model=PacketResponse)
+@router.post("/generate", response_model=JobResponse)
 async def generate_packet(request: GeneratePacketRequest):
     """
-    Generate a tailored application packet for a job.
+    Trigger background packet generation for a job.
     
-    Creates:
-    - Tailored CV (.tex and .pdf if compilation available)
-    - Recruiter message
-    - Common answers
-    - Cover letter (if requested)
+    Returns immediately with a job_id. Monitor progress via SSE /events/stream.
     """
-    # Get profile and job
-    profile = await get_user_profile()
-    job = await get_job_by_id(request.job_id)
+    # Validate job exists
+    await get_job_by_id(request.job_id)
     
-    # Generate tailoring plan
-    plan = tailoring_service.generate_tailoring_plan(
-        profile=profile,
-        job=job,
-        user_emphasis=request.user_emphasis
-    )
-    plan.profile_id = "profile"  # Simplified
-    
-    # Generate packet ID (will be replaced after DB insert)
-    from datetime import datetime
-    temp_id = f"temp_{int(datetime.utcnow().timestamp())}"
-    
-    # Render LaTeX CV
-    latex_content = tailoring_service.render_latex_cv(profile, plan)
-    
-    # Save .tex file
-    cv_tex = storage_service.save_file(
-        packet_id=temp_id,
-        filename="cv.tex",
-        content=latex_content,
-        file_type="tex"
+    # Create background job
+    job_service = JobService()
+    job = await job_service.create_job(
+        job_type=JobType.PACKET_GENERATION,
+        params={
+            "job_id": request.job_id,
+            "user_emphasis": request.user_emphasis,
+        },
     )
     
-    # Try to compile to PDF
-    cv_pdf = None
-    packet_dir = storage_service._get_packet_dir(temp_id)
-    pdf_path = tailoring_service.compile_latex(latex_content, packet_dir)
+    # Emit job created event
+    await sse_service.emit(SSEEvent(
+        event_type=EventType.JOB_CREATED,
+        data={
+            "job_id": job.id,
+            "type": job.type,
+            "status": job.status,
+            "message": "Packet generation queued"
+        },
+        user_id=job.user_id
+    ))
     
-    if pdf_path and pdf_path.exists():
-        cv_pdf = storage_service.save_binary_file(
-            packet_id=temp_id,
-            filename="cv.pdf",
-            source_path=pdf_path,
-            file_type="pdf"
-        )
-    
-    # Generate recruiter message
-    recruiter_msg = tailoring_service.generate_recruiter_message(profile, job, plan)
-    recruiter_file = storage_service.save_file(
-        packet_id=temp_id,
-        filename="recruiter_message.txt",
-        content=recruiter_msg,
-        file_type="txt"
+    return JobResponse(
+        job_id=job.id,
+        type=job.type,
+        status=job.status,
+        message="Packet generation started. Monitor progress via /events/stream"
     )
-    
-    # Generate common answers
-    answers = tailoring_service.generate_common_answers(profile, job)
-    answers_file = storage_service.save_file(
-        packet_id=temp_id,
-        filename="common_answers.md",
-        content=answers,
-        file_type="md"
-    )
-    
-    # Generate cover letter if requested
-    cover_letter_file = None
-    if request.include_cover_letter:
-        cover_letter = tailoring_service.generate_cover_letter(profile, job, plan)
-        cover_letter_file = storage_service.save_file(
             packet_id=temp_id,
             filename="cover_letter.txt",
             content=cover_letter,

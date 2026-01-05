@@ -108,11 +108,39 @@ A comprehensive job hunting platform that helps you manage your professional pro
   - 🚧 Workday (detection only)
   - 🚧 LinkedIn Easy Apply (detection only)
 
+### Phase 7: Production & Deployment (NEW!)
+- **Background Jobs**: Long-running operations as async jobs
+  - Job ingestion via background worker
+  - Match recomputation in background
+  - Packet generation async
+  - Interview generation async
+  - Job queue with atomic locking
+- **Real-time Updates**: Server-Sent Events (SSE)
+  - Live progress updates for all background jobs
+  - Application status change notifications
+  - Event history for reconnection support
+- **GridFS Storage**: Production-safe file storage
+  - MongoDB GridFS for artifacts (CVs, packets)
+  - Filesystem fallback for local development
+  - Metadata tracking and cleanup
+- **Production Hardening**:
+  - Health (`/healthz`) and readiness (`/readyz`) endpoints
+  - Request ID tracking and structured logging
+  - Centralized error handling with stable JSON
+  - Environment validation at startup
+  - Database indexes for performance
+- **Docker & Koyeb**: Full containerization support
+  - Dockerfiles for API, Worker, and Web
+  - docker-compose for local development
+  - Complete Koyeb deployment guide
+  - Environment variable documentation
+
 ## 📁 Project Structure
 
 This is a monorepo containing:
 
 - **`apps/api`**: FastAPI backend for CV processing, profile management, job ingestion, and application tracking
+- **`apps/worker`**: Background worker for async job processing (uses API codebase)
 - **`apps/web`**: Next.js frontend for profile management, job browsing, and application tracking UI
 - **`apps/local-agent`**: Node.js + Playwright local automation agent for form prefilling
 
@@ -125,15 +153,22 @@ Jobly/
 │   │   │   ├── routers/     # API endpoints
 │   │   │   ├── schemas/     # Pydantic schemas
 │   │   │   ├── services/    # Business logic
+│   │   │   ├── middleware/  # Error handling, request tracking
 │   │   │   └── main.py      # FastAPI application
 │   │   ├── tests/           # Backend tests
-│   │   └── requirements.txt
+│   │   ├── requirements.txt
+│   │   └── Dockerfile       # Container image for API
+│   ├── worker/       # Background job processor
+│   │   ├── handlers/        # Job type handlers
+│   │   ├── worker.py        # Worker entry point
+│   │   └── Dockerfile       # Container image for worker
 │   ├── web/          # Next.js frontend
 │   │   ├── app/             # Next.js pages
 │   │   ├── components/      # React components
 │   │   ├── lib/             # API client
 │   │   ├── types/           # TypeScript types
-│   │   └── package.json
+│   │   ├── package.json
+│   │   └── Dockerfile       # Container image for web
 │   └── local-agent/  # Playwright automation agent
 │       ├── src/
 │       │   ├── adapters/    # ATS adapters
@@ -141,6 +176,9 @@ Jobly/
 │       │   └── index.ts     # Entry point
 │       ├── package.json
 │       └── README.md
+├── docs/             # Documentation
+│   └── DEPLOY_KOYEB.md  # Deployment guide
+├── docker-compose.yml   # Local development with Docker
 └── README.md
 ```
 
@@ -267,6 +305,69 @@ npm run dev
 ```
 
 The web app will be available at http://localhost:3000
+
+## 🚢 Production Deployment
+
+Jobly is production-ready and can be deployed to cloud platforms like Koyeb, Heroku, or any container platform.
+
+### Quick Deploy to Koyeb
+
+Jobly includes full Docker support and a comprehensive deployment guide for Koyeb:
+
+1. **Architecture**: 3 services (API, Worker, Web) + MongoDB Atlas
+2. **Storage**: GridFS for production artifact storage
+3. **Real-time**: Server-Sent Events (SSE) for live progress updates
+4. **Background Jobs**: Async processing for long-running operations
+5. **Health Checks**: `/healthz` and `/readyz` endpoints
+6. **Monitoring**: Request IDs, structured logging, error handling
+
+**See the complete guide**: [docs/DEPLOY_KOYEB.md](docs/DEPLOY_KOYEB.md)
+
+### Key Features for Production
+
+#### Background Jobs & Real-time Updates
+- Job ingestion, match computation, packet generation, and interview prep run as background jobs
+- Real-time progress updates via SSE (Server-Sent Events)
+- Dedicated worker service processes jobs asynchronously
+- Job queue with atomic locking and automatic retry on failures
+
+#### GridFS Storage
+- Production-safe file storage using MongoDB GridFS
+- Supports large files (CVs, packets, attachments)
+- Automatic cleanup and metadata tracking
+- Falls back to filesystem for local development
+
+#### Production Hardening
+- ✅ Centralized error handling with stable JSON format
+- ✅ Request ID tracking for debugging
+- ✅ Structured logging with request context
+- ✅ Health and readiness endpoints
+- ✅ Environment validation at startup
+- ✅ Database indexes for optimal performance
+- ✅ CORS configuration via environment
+
+### Docker Support
+
+Run locally with Docker Compose:
+
+```bash
+# Set your OpenAI API key
+export OPENAI_API_KEY=sk-your-key-here
+
+# Start all services
+docker-compose up
+```
+
+This starts:
+- MongoDB (local)
+- API service on http://localhost:8000
+- Worker service (background jobs)
+- Web service on http://localhost:3000
+
+Individual Dockerfiles for each service:
+- `apps/api/Dockerfile` - API service
+- `apps/worker/Dockerfile` - Background worker
+- `apps/web/Dockerfile` - Next.js frontend
 
 ## 📚 Usage
 
