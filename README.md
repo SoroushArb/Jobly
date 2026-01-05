@@ -323,6 +323,29 @@ Jobly includes full Docker support and a comprehensive deployment guide for Koye
 
 **See the complete guide**: [docs/DEPLOY_KOYEB.md](docs/DEPLOY_KOYEB.md)
 
+#### Koyeb Configuration Quick Reference
+
+**Deploy two services** (API and Web) to Koyeb using GitHub integration:
+
+**API Service:**
+- Dockerfile location: `apps/api/Dockerfile`
+- Required environment variables:
+  - `MONGODB_URI` - MongoDB Atlas connection string
+  - `MONGODB_DB_NAME` - Database name (recommended: "jobly")
+  - `CORS_ORIGINS` - Your web app URL for CORS
+- Optional environment variables:
+  - `OPENAI_API_KEY` - For AI matching and interview prep features
+- Health check: HTTP GET on `/docs` or `/healthz`
+
+**Web Service:**
+- Dockerfile location: `apps/web/Dockerfile`
+- Required environment variables:
+  - `NEXT_PUBLIC_API_URL` - Your API service URL (e.g., https://your-api.koyeb.app)
+  - Must be set at build time for Next.js
+- Health check: HTTP GET on `/`
+
+Both services will bind to Koyeb's `$PORT` environment variable with sensible fallbacks (8000 for API, 3000 for Web).
+
 ### Key Features for Production
 
 #### Background Jobs & Real-time Updates
