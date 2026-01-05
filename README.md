@@ -327,8 +327,11 @@ Jobly includes full Docker support and a comprehensive deployment guide for Koye
 
 **Deploy two services** (API and Web) to Koyeb using GitHub integration:
 
+**Important**: Koyeb uses the repository root as the Docker build context, even when specifying a Dockerfile path. The Dockerfiles are already configured to handle this correctly—you only need to set the Dockerfile path, not a custom build context.
+
 **API Service:**
 - Dockerfile location: `apps/api/Dockerfile`
+- Build context: Repository root (automatic, no configuration needed)
 - Required environment variables:
   - `MONGODB_URI` - MongoDB Atlas connection string
   - `MONGODB_DB_NAME` - Database name (recommended: "jobly")
@@ -339,6 +342,7 @@ Jobly includes full Docker support and a comprehensive deployment guide for Koye
 
 **Web Service:**
 - Dockerfile location: `apps/web/Dockerfile`
+- Build context: Repository root (automatic, no configuration needed)
 - Required environment variables:
   - `NEXT_PUBLIC_API_URL` - Your API service URL (e.g., https://your-api.koyeb.app)
   - Must be set at build time for Next.js

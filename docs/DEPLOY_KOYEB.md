@@ -70,7 +70,7 @@ Same as API service (the worker shares the same codebase and configuration).
    - **Build**:
      - Builder: Docker
      - Dockerfile path: `apps/api/Dockerfile`
-     - Context directory: `apps/api`
+     - **Note**: Koyeb uses the repository root as the build context by default. The Dockerfiles are already configured to work with repo-root context, so you don't need to specify a custom build context.
    - **Port**: `8000`
    - **Health Check**: `/healthz` (HTTP GET)
    - **Environment Variables**: Add all API env vars from table above
@@ -91,7 +91,7 @@ Wait for deployment to complete. Note the URL (e.g., `https://jobly-api-your-org
    - **Build**:
      - Builder: Docker
      - Dockerfile path: `apps/worker/Dockerfile`
-     - Context directory: `apps/worker`
+     - **Note**: Koyeb uses the repository root as the build context by default. The Dockerfiles are already configured to work with repo-root context, so you don't need to specify a custom build context.
    - **Environment Variables**: Add all Worker env vars (same as API)
    - **Scaling**: Start with 1 instance (nano or micro)
 5. Click **Deploy**
@@ -110,7 +110,7 @@ Wait for deployment to complete. Note the URL (e.g., `https://jobly-api-your-org
    - **Build**:
      - Builder: Docker
      - Dockerfile path: `apps/web/Dockerfile`
-     - Context directory: `apps/web`
+     - **Note**: Koyeb uses the repository root as the build context by default. The Dockerfiles are already configured to work with repo-root context, so you don't need to specify a custom build context.
      - **Build Args**:
        - `NEXT_PUBLIC_API_URL=https://jobly-api-your-org.koyeb.app`
    - **Port**: `3000`
