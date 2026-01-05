@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'standalone', // For Docker deployments
+  // Note: standalone mode disabled to support npm run start with dynamic PORT binding for Koyeb
+  // output: 'standalone',
 };
 
 export default nextConfig;

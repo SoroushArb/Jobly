@@ -1,5 +1,5 @@
 # Dockerfile for Jobly API
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
@@ -28,5 +28,5 @@ COPY job_sources_config.yaml .
 EXPOSE 8000
 
 # Run the application
-# Note: PORT env var is read from config
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Using sh -c to ensure proper shell variable expansion for PORT
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
