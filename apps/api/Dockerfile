@@ -14,15 +14,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements
-COPY requirements.txt .
+COPY apps/api/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY app ./app
-COPY pyproject.toml .
-COPY job_sources_config.yaml .
+COPY apps/api/app ./app
+COPY apps/api/pyproject.toml .
+COPY apps/api/job_sources_config.yaml .
 
 # Expose port (will be overridden by $PORT in production)
 EXPOSE 8000

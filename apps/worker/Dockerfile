@@ -14,18 +14,18 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements from parent context
-COPY api/requirements.txt .
+COPY apps/api/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy worker code
-COPY worker/worker.py .
-COPY worker/handlers ./handlers
+COPY apps/worker/worker.py .
+COPY apps/worker/handlers ./handlers
 
 # Copy API code (worker imports from API)
-COPY api/app ./api/app
-COPY api/job_sources_config.yaml ./api/
+COPY apps/api/app ./api/app
+COPY apps/api/job_sources_config.yaml ./api/
 
 # Run the worker
 CMD ["python", "worker.py"]
