@@ -96,60 +96,6 @@ async def generate_packet(request: GeneratePacketRequest):
         status=job.status,
         message="Packet generation started. Monitor progress via /events/stream"
     )
-            packet_id=temp_id,
-            filename="cover_letter.txt",
-            content=cover_letter,
-            file_type="txt"
-        )
-    
-    # Create packet
-    packet = Packet(
-        job_id=request.job_id,
-        profile_id="profile",
-        tailoring_plan=plan,
-        cv_tex=cv_tex,
-        cv_pdf=cv_pdf,
-        cover_letter=cover_letter_file,
-        recruiter_message=recruiter_file,
-        common_answers=answers_file
-    )
-    
-    # Save to database
-    packet_in_db = await storage_service.save_packet(packet)
-    
-    # Rename temp directory to actual packet ID
-    import shutil
-    temp_dir = storage_service._get_packet_dir(temp_id)
-    actual_dir = storage_service._get_packet_dir(packet_in_db.id)
-    
-    if temp_dir.exists() and temp_dir != actual_dir:
-        shutil.move(str(temp_dir), str(actual_dir))
-        
-        # Update file paths in packet
-        packet_in_db.cv_tex.filepath = packet_in_db.cv_tex.filepath.replace(temp_id, packet_in_db.id)
-        if packet_in_db.cv_pdf:
-            packet_in_db.cv_pdf.filepath = packet_in_db.cv_pdf.filepath.replace(temp_id, packet_in_db.id)
-        if packet_in_db.cover_letter:
-            packet_in_db.cover_letter.filepath = packet_in_db.cover_letter.filepath.replace(temp_id, packet_in_db.id)
-        packet_in_db.recruiter_message.filepath = packet_in_db.recruiter_message.filepath.replace(temp_id, packet_in_db.id)
-        packet_in_db.common_answers.filepath = packet_in_db.common_answers.filepath.replace(temp_id, packet_in_db.id)
-        
-        # Update in database
-        await storage_service.update_packet(
-            packet_in_db.id,
-            {
-                "cv_tex": packet_in_db.cv_tex.model_dump(),
-                "cv_pdf": packet_in_db.cv_pdf.model_dump() if packet_in_db.cv_pdf else None,
-                "cover_letter": packet_in_db.cover_letter.model_dump() if packet_in_db.cover_letter else None,
-                "recruiter_message": packet_in_db.recruiter_message.model_dump(),
-                "common_answers": packet_in_db.common_answers.model_dump(),
-            }
-        )
-    
-    return PacketResponse(
-        packet=packet_in_db,
-        message=f"Packet generated successfully. PDF compilation: {'successful' if cv_pdf else 'not available (install latexmk)'}"
-    )
 
 
 @router.get("/{packet_id}", response_model=PacketResponse)
