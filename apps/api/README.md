@@ -530,6 +530,20 @@ pytest --cov=app tests/
 pytest tests/test_schemas.py
 ```
 
+### Syntax Validation
+
+Before deploying or committing code, ensure all Python files have valid syntax:
+
+```bash
+# From repository root
+./scripts/check_syntax.sh
+
+# Or manually:
+python -m compileall apps/api/app
+```
+
+This check is also included in the test suite (`tests/test_syntax.py`) and will catch syntax errors that would prevent Uvicorn from starting.
+
 ### Current Test Coverage
 
 - Phase 1: Profile parsing, validation
@@ -538,6 +552,7 @@ pytest tests/test_schemas.py
 - Phase 4: CV tailoring, packet generation
 - Phase 5: Interview pack generation, Q&A
 - Phase 6: Application tracking, token management
+- Syntax validation: Import checks, compileall validation
 
 All tests passing: 78/78 ✅
 

@@ -7,7 +7,7 @@ from typing import Optional
 from app.schemas.job_queue import (
     JobCreateRequest,
     JobResponse,
-    JobQueueListResponse,
+    JobListResponse,
     BackgroundJobInDB,
     JobType,
     JobStatus,
@@ -41,7 +41,7 @@ async def create_job(request: JobCreateRequest):
     )
 
 
-@router.get("", response_model=JobQueueListResponse)
+@router.get("", response_model=JobListResponse)
 async def list_jobs(
     user_id: Optional[str] = Query(None, description="Filter by user ID"),
     job_type: Optional[JobType] = Query(None, description="Filter by job type"),
@@ -61,7 +61,7 @@ async def list_jobs(
         limit=per_page,
     )
     
-    return JobQueueListResponse(
+    return JobListResponse(
         jobs=jobs,
         total=total,
         page=page,

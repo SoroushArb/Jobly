@@ -16,6 +16,8 @@ class BulletSwap(BaseModel):
 class TailoringPlan(BaseModel):
     """Structured plan for tailoring a CV to a specific job"""
     
+    model_config = {"protected_namespaces": ()}
+    
     # Job and profile references
     job_id: str
     profile_id: str

@@ -69,12 +69,6 @@ async def generate_interview_materials(
         status=job.status,
         message="Interview generation started. Monitor progress via /events/stream"
     )
-        
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate interview materials: {str(e)}"
-        )
 
 
 @router.get("/{packet_id}")
